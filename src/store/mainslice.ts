@@ -2,7 +2,6 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { User } from "../models/user";
 import { userService } from "../services/services";
 import { Post } from "../models/post";
-import { AxiosResponse } from "axios";
 
 export interface RootState {
   loadingUser?: boolean;
@@ -15,11 +14,25 @@ const initialState: RootState = {
   userPosts: [],
 };
 
-export const addUser = createAsyncThunk(
-  "user/add",
+
+export const register = createAsyncThunk(
+  "auth/signup",
   async (user: User) => {
     try {
-      const response = await userService.addUser(user);
+      const response = await userService.register(user);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+);
+
+export const authentication = createAsyncThunk(
+  "auth/login",
+  async (user: User) => {
+    try {
+      const response = await userService.authenticate(user);
       return response.data;
     } catch (error) {
       console.log(error);
@@ -37,10 +50,17 @@ export const mainSlice = createSlice({
   extraReducers: (builder) => {
     // extra reducers
     builder
-    .addCase(addUser.pending, (state) => {
+    .addCase(register.pending, (state) => {
       state.loadingUser = true;
     })
-    .addCase(addUser.fulfilled, (state, action) => {
+    .addCase(authentication.pending, (state) => {
+      state.loadingUser = true;
+    })
+    .addCase(register.fulfilled, (state, action) => {
+      state.user = action.payload;
+      state.loadingUser = false;
+    })
+    .addCase(authentication.fulfilled, (state, action) => {
       state.user = action.payload;
       state.loadingUser = false;
     });
