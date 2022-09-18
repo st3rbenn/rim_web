@@ -1,11 +1,20 @@
-import { Linking, StyleSheet, useColorScheme } from 'react-native';
+import { Linking, StyleSheet, useColorScheme, Vibration } from 'react-native';
 import { Text, View } from '../components/Themed';
 import { Stack, TextInput, IconButton, Flex, Button } from "@react-native-material/core";
 import { RootTabScreenProps } from '../../types';
 import { StatusBar } from 'expo-status-bar';
+import { useState } from 'react';
+import { useAppThunkDispatch } from '../store';
+import { authentication } from '../store/mainslice';
+import { User } from '../models/user';
+import { AxiosError } from 'axios';
 
 export default function LogInScreen({ navigation }: RootTabScreenProps<'LogInScreen'>) {
+  const dispatch = useAppThunkDispatch();
   const colorScheme = useColorScheme();
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const styles = StyleSheet.create({
     container: {
@@ -52,6 +61,27 @@ export default function LogInScreen({ navigation }: RootTabScreenProps<'LogInScr
     }
   });
 
+  const handleSubmit = async () => {
+    try {
+      const user: User = {
+        email,
+        password,
+      };
+
+      const res = await dispatch(authentication(user));
+      if(res.meta.requestStatus === 'fulfilled') {
+        Vibration.vibrate();
+      } else {
+        console.log(res);
+      }
+    } catch (error) {
+      const err = error as AxiosError;
+      // @ts-ignore
+      console.error(err.response?.data?.message);
+      throw error;
+    }
+  }
+
   return (
     <>
       <View style={styles.container}>
@@ -71,6 +101,7 @@ export default function LogInScreen({ navigation }: RootTabScreenProps<'LogInScr
             <TextInput
               variant='outlined'
               placeholder='email'
+              onChange={(e) => setEmail(e.nativeEvent.text)}
             />
           </View>
           <View>
@@ -79,10 +110,11 @@ export default function LogInScreen({ navigation }: RootTabScreenProps<'LogInScr
               variant='outlined'
               placeholder='mot de passe'
               secureTextEntry={true}
+              onChange={(e) => setPassword(e.nativeEvent.text)}
             />
           </View>
           <Stack>
-            <Button title='Ce connecter' style={{ padding: 3 }}></Button>
+            <Button title='Ce connecter' style={{ padding: 3 }} onPress={handleSubmit}></Button>
             <Text style={{ marginTop: 35 }}>Pas encore inscrit ? <Text style={{ color: '#9141F8', marginTop: 75 }} onPress={() => navigation.navigate('RegisterScreen')}>S'inscrire</Text></Text>
           </Stack>
         </Stack>

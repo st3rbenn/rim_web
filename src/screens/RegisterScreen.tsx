@@ -8,7 +8,7 @@ import { StatusBar } from 'expo-status-bar';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import axios, { AxiosError } from 'axios';
 import { useAppThunkDispatch } from '../store';
-import { addUser } from '../store/mainslice';
+import { register } from '../store/mainslice';
 import { User } from '../models/user';
 import { logger } from 'react-native-logs';
 
@@ -87,7 +87,7 @@ export default function RegisterScreen({ navigation }: RootTabScreenProps<'Regis
           pseudo,
           birthDate,
         }
-        const res = await dispatch(addUser(user));
+        const res = await dispatch(register(user));
         // @ts-ignore
         if(res.meta.requestStatus === 'rejected') {
           alert("Une erreur est survenue");
