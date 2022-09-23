@@ -1,69 +1,50 @@
 import {
-  StyleSheet,
-  useColorScheme,
-  ScrollView,
+	StyleSheet,
+	ScrollView,
 	Keyboard,
-	TouchableWithoutFeedback, } from "react-native";
-import DatePickerIOS from "@react-native-community/datetimepicker";
-import { Text, View } from "../components/Themed";
-import { RootStackParamList, RootTabScreenProps } from "../../types";
-import {
-	Stack as MuiStack,
-	TextInput,
-	Flex,
-	Button,
-	Stack,
-} from "@react-native-material/core";
-import { useState } from "react";
-import { StatusBar } from "expo-status-bar";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import axios, { AxiosError } from "axios";
+	TouchableWithoutFeedback,
+} from "react-native";
+import { Text } from "../components/Themed";
+import { RootTabScreenProps } from "../../types";
+import { Stack } from "@react-native-material/core";
 import { useAppThunkDispatch } from "../store";
-import { register } from "../store/mainslice";
-import { User } from "../models/user";
-import { logger } from "react-native-logs";
-import Logo from "../components/Logo";
-import RegsiterForm from "../components/form/RegisterForm";
+import RegisterForm from "../components/form/RegisterForm";
 
 export default function RegisterScreen({
 	navigation,
 }: RootTabScreenProps<"RegisterScreen">) {
-	const colorScheme = useColorScheme();
-
 	const dispatch = useAppThunkDispatch();
 
 	return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <ScrollView contentContainerStyle={styles.container}>
-        <Stack style={{ flex: 1 }}>
-          <Stack style={styles.infoBox} spacing={20}>
+		<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <ScrollView scrollEnabled>
+        <Stack style={styles.container} spacing={50}>
+          <Stack style={styles.infoBox} spacing={10}>
             <Text style={styles.heading}>Inscription</Text>
             <Text style={styles.subText}>
               Créez votre compte pour accéder l'application
             </Text>
           </Stack>
-          <RegsiterForm navigation={navigation} />
+          {/* @ts-ignore */}
+          <RegisterForm navigation={navigation} />
         </Stack>
       </ScrollView>
-    </TouchableWithoutFeedback>
+		</TouchableWithoutFeedback>
 	);
 }
 
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		justifyContent: "center",
 		marginLeft: 16,
 		marginRight: 16,
-		paddingBottom: 50,
+    marginBottom: 100,
+    marginTop: 20,
 	},
 	infoBox: {
-		justifyContent: "center",
 		alignItems: "flex-start",
-		display: "flex",
-		flex: 1,
 		marginTop: 16,
-    marginBottom: 16,
+		marginBottom: 16,
 	},
 	heading: {
 		fontSize: 24,

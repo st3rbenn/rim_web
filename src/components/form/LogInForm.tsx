@@ -5,25 +5,16 @@ import {
 	TextInput as NativeInput,
 	Vibration,
 	Modal,
-  Alert,
+	Alert,
 } from "react-native";
-import {
-	Stack,
-	TextInput,
-	IconButton,
-	Flex,
-	Button,
-	Pressable,
-} from "@react-native-material/core";
+import { Stack, Pressable, Button } from "@react-native-material/core";
 import React, { useState } from "react";
 import { Formik, ErrorMessage } from "formik";
-import navigation from "../../navigation";
 import { object, string } from "yup";
 import { AxiosError } from "axios";
 import { User } from "../../models/user";
 import { useAppThunkDispatch } from "../../store";
 import { RootTabScreenProps } from "../../../types";
-import { StatusBar } from "expo-status-bar";
 import { authentication } from "../../store/mainslice";
 
 function LogInForm({ navigation }: RootTabScreenProps<"LogInScreen">) {
@@ -87,13 +78,7 @@ function LogInForm({ navigation }: RootTabScreenProps<"LogInScreen">) {
 								onChange={(e) => setEmail(e.nativeEvent.text)}
 							/>
 							{errors.email && touched.email && (
-								<ErrorMessage
-									name="email"
-									component={Text}
-									render={() => {
-										return <Text style={styles.errorMsg}>{errors.email}</Text>;
-									}}
-								/>
+								<Text style={styles.errorMsg}>{errors.email}</Text>
 							)}
 						</Stack>
 						<Stack spacing={10}>
@@ -108,29 +93,15 @@ function LogInForm({ navigation }: RootTabScreenProps<"LogInScreen">) {
 								onChange={(e) => setPassword(e.nativeEvent.text)}
 							/>
 							{errors.password && touched.password && (
-								<ErrorMessage
-									name="password"
-									component={Text}
-									render={() => {
-										return (
-											<Text style={styles.errorMsg}>{errors.password}</Text>
-										);
-									}}
-								/>
+								<Text style={styles.errorMsg}>{errors.password}</Text>
 							)}
 						</Stack>
-						<Stack spacing={25} style={styles.buttonContainer}>
+						<Stack spacing={25}>
 							<Button
-								title="Se connecter"
-								onPress={() => handleSubmit()}
-								style={{
-									...styles.connectionBtn,
-									height: 40,
-									borderRadius: 20,
-								}}
-								color="primary"
-								variant="contained"
+								title="Ce connecter"
 								uppercase={false}
+								style={styles.button}
+								onPress={() => handleSubmit()}
 							></Button>
 							<Text>
 								Pas encore de compte ?
@@ -186,15 +157,9 @@ const styles = StyleSheet.create({
 		fontSize: 11,
 		fontWeight: "bold",
 	},
-	buttonContainer: {
-		alignItems: "flex-start",
-	},
 	connectionBtn: {
-		backgroundColor: "#9141F8",
-		width: "100%",
-		height: 50,
-		alignItems: "center",
 		justifyContent: "center",
+		backgroundColor: "#9141F8",
 	},
 	input: {
 		backgroundColor: "white",
@@ -231,15 +196,15 @@ const styles = StyleSheet.create({
 		elevation: 5,
 	},
 	button: {
-		borderRadius: 20,
-		padding: 10,
-		elevation: 2,
+		backgroundColor: "#9141F8",
 	},
 	buttonOpen: {
 		backgroundColor: "#F194FF",
 	},
 	buttonClose: {
 		backgroundColor: "#2196F3",
+    padding: 10,
+    borderRadius: 15,
 	},
 	textStyle: {
 		color: "white",

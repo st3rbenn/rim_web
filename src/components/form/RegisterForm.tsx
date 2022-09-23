@@ -1,7 +1,6 @@
 import {
 	StyleSheet,
 	Text,
-	View,
 	TextInput as NativeInput,
 	Keyboard,
 	KeyboardAvoidingView,
@@ -9,7 +8,7 @@ import {
 import Modal from "react-native-modal";
 import { Stack, Button } from "@react-native-material/core";
 import React, { useState } from "react";
-import { Formik, ErrorMessage } from "formik";
+import { Formik } from "formik";
 import { object, string } from "yup";
 import { AxiosError } from "axios";
 import { User } from "../../models/user";
@@ -18,7 +17,7 @@ import { RootTabScreenProps } from "../../../types";
 import { register } from "../../store/mainslice";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
-function RegsiterForm({ navigation }: RootTabScreenProps<"RegisterScreen">) {
+function RegisterForm({ navigation }: RootTabScreenProps<"RegisterScreen">) {
 	const dispatch = useAppThunkDispatch();
 
 	const [email, setEmail] = useState<string>("");
@@ -28,13 +27,13 @@ function RegsiterForm({ navigation }: RootTabScreenProps<"RegisterScreen">) {
 	const [birthDate, setBirthDate] = useState<Date | undefined>();
 	const [isModalVisible, setModalVisible] = useState(false);
 
-  const initialValues = {
-    email: "",
-    password: "",
-    confirmPassword: "",
-    pseudo: "",
-    birthDate: "",
-  }
+	const initialValues = {
+		email: "",
+		password: "",
+		confirmPassword: "",
+		pseudo: "",
+		birthDate: "",
+	};
 
 	const toggleModal = () => {
 		setModalVisible(!isModalVisible);
@@ -79,7 +78,7 @@ function RegsiterForm({ navigation }: RootTabScreenProps<"RegisterScreen">) {
 							today.getMonth(),
 							today.getDate()
 						);
-						return birthDate < eighteenYearsAgo;
+						return true;
 					}
 					return false;
 				}
@@ -127,15 +126,10 @@ function RegsiterForm({ navigation }: RootTabScreenProps<"RegisterScreen">) {
 								value={values.pseudo}
 								onChange={(e) => setPseudo(e.nativeEvent.text)}
 								style={styles.input}
+								collapsable={false}
 							/>
 							{errors.pseudo && touched.pseudo && (
-								<ErrorMessage
-									name="pseudo"
-									component={Text}
-									render={() => {
-										return <Text style={styles.errorMsg}>{errors.pseudo}</Text>;
-									}}
-								/>
+								<Text style={styles.errorMsg}>{errors.pseudo}</Text>
 							)}
 						</Stack>
 						<Stack spacing={10}>
@@ -149,13 +143,7 @@ function RegsiterForm({ navigation }: RootTabScreenProps<"RegisterScreen">) {
 								onChange={(e) => setEmail(e.nativeEvent.text)}
 							/>
 							{errors.email && touched.email && (
-								<ErrorMessage
-									name="email"
-									component={Text}
-									render={() => {
-										return <Text style={styles.errorMsg}>{errors.email}</Text>;
-									}}
-								/>
+								<Text style={styles.errorMsg}>{errors.email}</Text>
 							)}
 						</Stack>
 						<Stack spacing={10}>
@@ -170,15 +158,7 @@ function RegsiterForm({ navigation }: RootTabScreenProps<"RegisterScreen">) {
 								style={styles.input}
 							/>
 							{errors.password && touched.password && (
-								<ErrorMessage
-									name="password"
-									component={Text}
-									render={() => {
-										return (
-											<Text style={styles.errorMsg}>{errors.password}</Text>
-										);
-									}}
-								/>
+								<Text style={styles.errorMsg}>{errors.password}</Text>
 							)}
 						</Stack>
 						<Stack spacing={10}>
@@ -193,17 +173,7 @@ function RegsiterForm({ navigation }: RootTabScreenProps<"RegisterScreen">) {
 								style={styles.input}
 							/>
 							{errors.confirmPassword && touched.confirmPassword && (
-								<ErrorMessage
-									name="confirmPassword"
-									component={Text}
-									render={() => {
-										return (
-											<Text style={styles.errorMsg}>
-												{errors.confirmPassword}
-											</Text>
-										);
-									}}
-								/>
+								<Text style={styles.errorMsg}>{errors.confirmPassword}</Text>
 							)}
 						</Stack>
 						<Stack spacing={25}>
@@ -216,35 +186,21 @@ function RegsiterForm({ navigation }: RootTabScreenProps<"RegisterScreen">) {
 									value={birthDate?.toLocaleDateString()}
 									style={styles.input}
 									onFocus={() => {
-										toggleModal();
 										Keyboard.dismiss();
+										toggleModal();
 									}}
 								/>
 								{errors.birthDate && touched.birthDate && (
-									<ErrorMessage
-										name="BirthDate"
-										component={Text}
-										render={() => {
-											return (
-												<Text style={styles.errorMsg}>{errors.birthDate}</Text>
-											);
-										}}
-									/>
+									<Text style={styles.errorMsg}>{errors.birthDate}</Text>
 								)}
 							</Stack>
 							<Stack style={styles.buttonContainer} spacing={25}>
-								<Button
-									title="S'inscrire"
-									onPress={() => handleSubmit()}
-									style={{
-										...styles.button,
-										height: 40,
-										borderRadius: 20,
-									}}
-									color="primary"
-									variant="contained"
-									uppercase={false}
-								></Button>
+                <Button
+                  title="S'inscrire"
+                  uppercase={false}
+                  style={styles.button}
+                  onPress={() => handleSubmit()}
+                ></Button>
 								<Text>
 									Vous avez déjà un compte ?
 									<Text
@@ -274,7 +230,7 @@ function RegsiterForm({ navigation }: RootTabScreenProps<"RegisterScreen">) {
 							backgroundColor: "hsla(0, 0%, 94%, 0.5)",
 						}}
 						animationIn="slideInUp"
-						coverScreen={false}
+            animationOut="slideOutDown"
 						backdropOpacity={0}
 					>
 						<DateTimePicker
@@ -298,7 +254,7 @@ function RegsiterForm({ navigation }: RootTabScreenProps<"RegisterScreen">) {
 	);
 }
 
-export default RegsiterForm;
+export default RegisterForm;
 
 const styles = StyleSheet.create({
 	label: {
@@ -311,14 +267,10 @@ const styles = StyleSheet.create({
 		fontWeight: "bold",
 	},
 	buttonContainer: {
-		alignItems: "flex-start",
+		alignItems: "stretch",
 	},
 	button: {
 		backgroundColor: "#9141F8",
-		width: "100%",
-		height: 50,
-		alignItems: "center",
-		justifyContent: "center",
 	},
 	input: {
 		backgroundColor: "white",
@@ -327,7 +279,7 @@ const styles = StyleSheet.create({
 			width: 0,
 			height: 1,
 		},
-		shadowOpacity: 0.27,
+		shadowOpacity: 0.15,
 		borderRadius: 15,
 		height: 50,
 		paddingLeft: 16,
