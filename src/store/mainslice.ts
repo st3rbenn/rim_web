@@ -8,6 +8,7 @@ export interface RootState {
   user?: User;
   loadingUserPosts?: boolean;
   userPosts?: Post[];
+  errorMessage?: string;
 }
 
 const initialState: RootState = {
