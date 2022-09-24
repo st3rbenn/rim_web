@@ -1,7 +1,8 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { User } from "../models/user";
-import { userService } from "../services/services";
+import { authService } from "../services/services";
 import { Post } from "../models/post";
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 export interface RootState {
   loadingUser?: boolean;
@@ -15,29 +16,43 @@ const initialState: RootState = {
   userPosts: [],
 };
 
+const { setItem, getItem} = AsyncStorage;
+
 
 export const register = createAsyncThunk(
   "auth/signup",
-  async (user: User) => {
+  async (user: User, thunkAPI) => {
     try {
-      const response = await userService.register(user);
+      const response = await authService.register(user);
       return response.data;
     } catch (error) {
-      console.log(error);
-      throw error;
+      return thunkAPI.rejectWithValue(error.response.data);
     }
   }
 );
 
 export const authentication = createAsyncThunk(
   "auth/login",
-  async (user: User) => {
+  async (user: User, thunkAPI) => {
     try {
-      const response = await userService.authenticate(user);
+      const response = await authService.authenticate(user);
+      if(response.data) {
+        await setItem('token', response.data.token);
+      }
       return response.data;
     } catch (error) {
-      console.log(error);
-      throw error;
+      return thunkAPI.rejectWithValue(error.response.data);
+    }
+  }
+);
+export const logOut = createAsyncThunk(
+  "auth/logout",
+  async (thunkAPI) => {
+    try {
+      const token = await authService.logOut();
+      return token;
+    } catch (error) {
+      return error;
     }
   }
 );
@@ -57,6 +72,9 @@ export const mainSlice = createSlice({
     .addCase(authentication.pending, (state) => {
       state.loadingUser = true;
     })
+    .addCase(logOut.pending, (state) => {
+      state.loadingUser = true;
+    })
     .addCase(register.fulfilled, (state, action) => {
       state.user = action.payload;
       state.loadingUser = false;
@@ -64,7 +82,11 @@ export const mainSlice = createSlice({
     .addCase(authentication.fulfilled, (state, action) => {
       state.user = action.payload;
       state.loadingUser = false;
-    });
+    })
+    .addCase(logOut.fulfilled, (state) => {
+      state.user = null;
+      state.loadingUser = false;
+    })
   },
 })
 

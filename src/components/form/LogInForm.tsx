@@ -33,16 +33,16 @@ function LogInForm({ navigation }: RootTabScreenProps<"LogInScreen">) {
 			};
 
 			const res = await dispatch(authentication(user));
-			if (res.meta.requestStatus === "fulfilled") {
+      if(res.meta.requestStatus === "rejected") {
+				setLogMessage(res.payload.message);
+				setModalVisible(true);
+      } else {
 				Vibration.vibrate();
 				setLogMessage("Log in successful!");
 				setIsAuthenticating(true);
 				setModalVisible(true);
-			} else {
-				console.log(res);
-				setLogMessage("an error occured");
-				setModalVisible(true);
-			}
+      }
+
 		} catch (error) {
 			const err = error as AxiosError;
 			// @ts-ignore

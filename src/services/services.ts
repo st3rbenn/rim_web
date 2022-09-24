@@ -1,3 +1,3 @@
-import { UserSerice } from "./UserService";
+import { AuthService } from "./AuthService";
 
-export const userService = new UserSerice();
+export const authService = new AuthService();

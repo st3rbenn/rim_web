@@ -3,7 +3,7 @@ import { Text } from "../components/Themed";
 import { RootTabScreenProps } from "../../types";
 import { StatusBar } from "expo-status-bar";
 import LogInForm from "../components/form/LogInForm";
-import { Divider, Stack } from "@react-native-material/core";
+import { Stack } from "@react-native-material/core";
 
 export default function LogInScreen({
 	navigation,
