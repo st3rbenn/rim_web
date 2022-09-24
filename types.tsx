@@ -17,6 +17,7 @@ export type RootStackParamList = {
   Root: NavigatorScreenParams<RootTabParamList> | undefined;
   RegisterScreen: undefined;
   LogInScreen: undefined;
+  Home: undefined;
   Modal: undefined;
   NotFound: undefined;
 };
@@ -29,6 +30,7 @@ export type RootStackScreenProps<Screen extends keyof RootStackParamList> = Nati
 export type RootTabParamList = {
   RegisterScreen: undefined;
   LogInScreen: undefined;
+  Home: undefined;
 };
 
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> = CompositeScreenProps<
