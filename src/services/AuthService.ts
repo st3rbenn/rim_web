@@ -6,7 +6,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { removeItem } = AsyncStorage;
 
-export class AuthService {
+class AuthService {
   async register(user: User): Promise<AxiosResponse> {
     try {
       const response = await axios.post(`${REACT_APP_API_URL}/auth/signup`, {
@@ -23,7 +23,7 @@ export class AuthService {
     }
   }
 
-  async authenticate(user: User): Promise<AxiosResponse> {
+  async authenticate(user: User) {
     try {
       const response = await axios.post(`${REACT_APP_API_URL}/auth/login`, {
         method: "POST",
@@ -32,7 +32,7 @@ export class AuthService {
         },
         ...user,
       });
-      return response;
+      return response.data;
     } catch (error) {
       console.log(error);
       throw error;
@@ -43,3 +43,5 @@ export class AuthService {
     return await removeItem("token");
   }
 }
+
+export default AuthService;

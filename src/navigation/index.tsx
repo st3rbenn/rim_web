@@ -1,21 +1,45 @@
-import { NavigationContainer, DarkTheme } from "@react-navigation/native";
+import { NavigationContainer, DarkTheme, useNavigation, useRoute } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { useState, useEffect } from "react";
 import { ColorSchemeName, Pressable } from "react-native";
 import NotFoundScreen from "../screens/NotFoundScreen";
 import { RootStackParamList } from "../../types";
 import LinkingConfiguration from "./LinkingConfiguration";
-import Logo from "../components/Logo";
 import AuthStack from "./AuthStack";
 import MainStack from "./MainStack";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useSelector } from 'react-redux';
+import { useSelector } from "react-redux";
+import { RootState } from "../store";
+import Logo from "../components/Logo";
+import CustomHeader from "../components/CustomHeader";
 
-function CustomHeader() {
+function RootNavigator() {
+  const Stack = createNativeStackNavigator<RootStackParamList>();
+  const tokenAuth = useSelector((state: any) => state.userToken);
+  const userData = useSelector((state: RootState) => state.user);
+
   return (
-    <Pressable style={{ flex: 0.9, alignItems: "center" }} onPress={() => {}}>
-      <Logo />
-    </Pressable>
+    <Stack.Navigator screenOptions={!tokenAuth ? {
+      headerLeft: () => <CustomHeader />,
+      headerStyle: {
+        backgroundColor: "hsla(0, 0%, 94%, 1)",
+      },
+      headerBackground: () => (
+        <Pressable style={{ flex: 1 }} onPress={() => {}} />
+      ),
+      headerShadowVisible: false,
+      animationTypeForReplace: "push",
+      headerTitle: '',
+      gestureEnabled: false,
+      headerShown: true,
+    } : {headerShown: false}}>
+      {!!tokenAuth && tokenAuth?.token
+        ? MainStack({ Stack })
+        : AuthStack({ Stack })}
+      <Stack.Screen
+        name="NotFound"
+        component={NotFoundScreen}
+        options={{ title: "Oops!" }}
+      />
+    </Stack.Navigator>
   );
 }
 
@@ -42,40 +66,5 @@ export default function Navigation({
     >
       <RootNavigator />
     </NavigationContainer>
-  );
-}
-
-function RootNavigator() {
-  const Stack = createNativeStackNavigator<RootStackParamList>();
-  const userData = useSelector((state: any) => state.user);
-
-  const StackOptions = new Map();
-  StackOptions.set("globalOptions", {
-    headerLeft: () => <CustomHeader />,
-    headerTitle: "",
-    headerStyle: {
-      backgroundColor: "hsla(0, 0%, 94%, 1)",
-      shadowColor: "transparent",
-    },
-    headerBackground: () => (
-      <Pressable style={{ flex: 1 }} onPress={() => {}} />
-    ),
-    animationTypeForReplace: "push",
-    gestureEnabled: false,
-  });
-
-  return (
-    <Stack.Navigator screenOptions={StackOptions.get("globalOptions")}>
-      {!!userData && userData?.token ? (
-        MainStack(Stack)
-      ) : (
-        AuthStack(Stack)
-      )}
-      <Stack.Screen
-        name="NotFound"
-        component={NotFoundScreen}
-        options={{ title: "Oops!" }}
-      />
-    </Stack.Navigator>
   );
 }

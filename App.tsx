@@ -18,8 +18,10 @@ export default function App() {
     return (
       <SafeAreaProvider>
         <Provider store={store}>
-          <Navigation colorScheme={colorScheme} />
-          <StatusBar />
+          <PersistGate loading={null} persistor={persistor}>
+            <Navigation colorScheme={colorScheme} />
+            <StatusBar />
+          </PersistGate>
         </Provider>
       </SafeAreaProvider>
     );
