@@ -1,8 +1,17 @@
-export interface User {
+export interface User extends UserQuery {
   id?: string;
   email: string;
-  password: string;
   pseudo?: string;
+  firstName?: string;
+  password?: string;
+  biography?: string;
+  avatar?: string;
   birthDate?: Date;
-  error?: string;
+  nbFollowers?: number;
+  nbFollowed?: number;
 }
+
+interface UserQuery {
+  message: string,
+  user: User
+};

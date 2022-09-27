@@ -1,93 +1,97 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { User } from "../models/user";
-import { authService } from "../services/services";
+import { authService, userService } from "../services/services";
 import { Post } from "../models/post";
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export interface RootState {
   loadingUser?: boolean;
   user?: User;
+  userToken?: string;
   loadingUserPosts?: boolean;
   userPosts?: Post[];
   errorMessage?: string;
+  isPremium?: boolean;
 }
 
 const initialState: RootState = {
   userPosts: [],
+  isPremium: false,
 };
 
-const { setItem, getItem} = AsyncStorage;
-
+const { setItem } = AsyncStorage;
 
 export const register = createAsyncThunk(
   "auth/signup",
-  async (user: User, thunkAPI) => {
-    try {
-      const response = await authService.register(user);
-      return response.data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data);
-    }
-  }
+  async (user: User) => await authService.register(user)
 );
 
-export const authentication = createAsyncThunk(
+export const authentication = createAsyncThunk<User, {}>(
   "auth/login",
-  async (user: User, thunkAPI) => {
+  async (user: User) => {
     try {
-      const response = await authService.authenticate(user);
-      if(response.data) {
-        await setItem('token', response.data.token);
+      const token = await authService.authenticate(user);
+      if (token) {
+        await setItem("token", token.token);
       }
-      return response.data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data);
-    }
-  }
-);
-export const logOut = createAsyncThunk(
-  "auth/logout",
-  async (thunkAPI) => {
-    try {
-      const token = await authService.logOut();
-      return token;
+
+      const userData = await userService.profile();
+
+      return [userData, token];
     } catch (error) {
       return error;
     }
   }
 );
 
+export const logOut = createAsyncThunk(
+  "auth/logout",
+  async () => await authService.logOut()
+);
+
+export const reloadProfile = createAsyncThunk(
+  "user/profile",
+  async () => await userService.profile()
+);
+
 export const mainSlice = createSlice({
-  name: 'root', // name of the slice
+  name: "root", // name of the slice
   initialState,
   reducers: {
-    // reducers
   },
   extraReducers: (builder) => {
     // extra reducers
     builder
-    .addCase(register.pending, (state) => {
-      state.loadingUser = true;
-    })
-    .addCase(authentication.pending, (state) => {
-      state.loadingUser = true;
-    })
-    .addCase(logOut.pending, (state) => {
-      state.loadingUser = true;
-    })
-    .addCase(register.fulfilled, (state, action) => {
-      state.user = action.payload;
-      state.loadingUser = false;
-    })
-    .addCase(authentication.fulfilled, (state, action) => {
-      state.user = action.payload;
-      state.loadingUser = false;
-    })
-    .addCase(logOut.fulfilled, (state) => {
-      state.user = null;
-      state.loadingUser = false;
-    })
+      .addCase(register.pending, (state) => {
+        state.loadingUser = true;
+      })
+      .addCase(authentication.pending, (state) => {
+        state.loadingUser = true;
+      })
+      .addCase(logOut.pending, (state) => {
+        state.loadingUser = true;
+      })
+      .addCase(reloadProfile.pending, (state) => {
+        state.loadingUser = true;
+      })
+      .addCase(authentication.fulfilled, (state, action) => {
+        state.userToken = action.payload[1];
+        state.user = action.payload[0].user;
+        state.loadingUser = false;
+      })
+      .addCase(reloadProfile.fulfilled, (state, action) => {
+        state.user = action.payload.user;
+        state.loadingUser = false;
+      })
+      .addCase(register.fulfilled, (state) => {
+        state.loadingUser = false;
+      })
+      .addCase(logOut.fulfilled, (state) => {
+        state.user = undefined;
+        state.userToken = undefined;
+        state.loadingUser = undefined;
+      });
   },
-})
+});
 
 export default mainSlice.reducer;

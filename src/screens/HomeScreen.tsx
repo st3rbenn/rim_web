@@ -1,23 +1,13 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-import { Button } from '@react-native-material/core'
-import { useAppThunkDispatch } from "../store";
-import { logOut } from '../store/mainslice';
+import { Stack } from '@react-native-material/core'
 
 const HomeScreen = () => {
 
-  const dispatch = useAppThunkDispatch();
-
-  const handleDisconnect = () => {
-    dispatch(logOut());
-  }
-
-
   return (
-    <View>
+    <Stack>
       <Text>HomeScreen</Text>
-      <Button title='disconnect' onPress={handleDisconnect}></Button>
-    </View>
+    </Stack>
   )
 }
 

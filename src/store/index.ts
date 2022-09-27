@@ -1,16 +1,19 @@
 import {Action, configureStore, ThunkDispatch} from '@reduxjs/toolkit';
 import {useDispatch} from 'react-redux';
 import {persistStore, persistReducer} from 'redux-persist';
-import localforage from 'localforage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import mainSliceReducer from './mainslice';
 
 const persistConfig = {
-  key: 'Rim',
+  key: 'perfectpost',
+  storage: AsyncStorage,
 };
 
+const persisted = persistReducer(persistConfig, mainSliceReducer);
+
 export const store = configureStore({
-  reducer: mainSliceReducer,
+  reducer: persisted,
   devTools: true,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

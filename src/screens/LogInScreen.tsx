@@ -8,6 +8,7 @@ import { Stack } from "@react-native-material/core";
 export default function LogInScreen({
 	navigation,
 }: RootTabScreenProps<"LogInScreen">) {
+  
 	return (
 		<>
 			<TouchableWithoutFeedback onPress={Keyboard.dismiss}>

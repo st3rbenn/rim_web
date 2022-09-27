@@ -21,8 +21,6 @@ function LogInForm({ navigation }: RootTabScreenProps<"LogInScreen">) {
 	const dispatch = useAppThunkDispatch();
 	const [email, setEmail] = useState<string>("");
 	const [password, setPassword] = useState<string>("");
-	const [isAuthenticating, setIsAuthenticating] = useState<boolean>(false);
-	const [modalVisible, setModalVisible] = useState<boolean>(false);
 	const [logMessage, setLogMessage] = useState<string>("");
 
 	const handleSubmit = async () => {
@@ -34,13 +32,12 @@ function LogInForm({ navigation }: RootTabScreenProps<"LogInScreen">) {
 
 			const res = await dispatch(authentication(user));
       if(res.meta.requestStatus === "rejected") {
-				setLogMessage(res.payload.message);
-				setModalVisible(true);
+        console.log('Email ou mot de passe incorrect');
+        
+        return setLogMessage("Email ou mot de passe incorrect");
       } else {
 				Vibration.vibrate();
 				setLogMessage("Log in successful!");
-				setIsAuthenticating(true);
-				setModalVisible(true);
       }
 
 		} catch (error) {
@@ -98,7 +95,7 @@ function LogInForm({ navigation }: RootTabScreenProps<"LogInScreen">) {
 						</Stack>
 						<Stack spacing={25}>
 							<Button
-								title="Ce connecter"
+								title="Se connecter"
 								uppercase={false}
 								style={styles.button}
 								onPress={() => handleSubmit()}
@@ -116,31 +113,6 @@ function LogInForm({ navigation }: RootTabScreenProps<"LogInScreen">) {
 					</Stack>
 				)}
 			</Formik>
-			{isAuthenticating && (
-				<>
-					<Modal
-						animationType="slide"
-						transparent={true}
-						visible={modalVisible}
-						onRequestClose={() => {
-							Alert.alert("Modal has been closed.");
-							setModalVisible(!modalVisible);
-						}}
-					>
-						<View style={styles.centeredView}>
-							<View style={styles.modalView}>
-								<Text style={styles.modalText}>{logMessage}</Text>
-								<Pressable
-									style={[styles.button, styles.buttonClose]}
-									onPress={() => setModalVisible(!modalVisible)}
-								>
-									<Text style={styles.textStyle}>Fermer</Text>
-								</Pressable>
-							</View>
-						</View>
-					</Modal>
-				</>
-			)}
 		</>
 	);
 }
