@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import mainSliceReducer from './mainslice';
 
 const persistConfig = {
-  key: 'perfectpost',
+  key: 'rim',
   storage: AsyncStorage,
 };
 

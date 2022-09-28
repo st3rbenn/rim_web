@@ -1,33 +1,20 @@
-import { Pressable, Text } from "@react-native-material/core";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeScreen from "../screens/HomeScreen";
 import ProfileScreen from "../screens/profile/ProfileScreen";
 import SearchScreen from "../screens/SearchScreen";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import NotificationScreen from "../screens/NotificationScreen";
-import Logo from "../components/Logo";
 import { useSelector } from "react-redux";
 import { RootState } from "../store";
 import { useEffect, useState } from "react";
 import CustomHeader from "../components/CustomHeader";
-import { useRoute } from "@react-navigation/native";
 
 const Tab = createBottomTabNavigator();
 
-function TabNavigator({navigation}) {
+function TabNavigator() {
   const [currentRoute, setCurrentRoute] = useState<string>("");
   const userData = useSelector((state: RootState) => state.user);
   const tokenAuth = useSelector((state: any) => state.userToken);
-
-  useEffect(() => {
-    console.log("current route", currentRoute);
-  }, [currentRoute]);
-
-  useEffect(() => {
-    if (!tokenAuth) {
-      navigation.navigate("Login");
-    }
-  }, [tokenAuth]);
   
 
   return (
@@ -35,12 +22,13 @@ function TabNavigator({navigation}) {
       initialRouteName="Home"
       screenOptions={
         tokenAuth
-          ? {
-              headerLeft: () => <CustomHeader title={currentRoute} />,
+          && {
+              header: ({navigation}) => <CustomHeader title={currentRoute} />,
               headerTitle: '',
               headerStyle: {
                 backgroundColor: 'hsla(0, 0%, 94%, 1)',
                 shadowColor: 'transparent',
+                width: '100%',
               },
               headerShown: true,
               tabBarShowLabel: false,
@@ -56,7 +44,6 @@ function TabNavigator({navigation}) {
               },
               tabBarActiveTintColor: "#9141F8",
             }
-          : { headerShown: false }
       }
     >
       <Tab.Screen
@@ -147,7 +134,7 @@ function TabNavigator({navigation}) {
         }}
         listeners={({ navigation, route }) => ({
           tabPress: (e) => {
-            setCurrentRoute(userData?.firstName);
+            setCurrentRoute(userData?.pseudo);
           },
         })}
       />

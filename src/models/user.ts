@@ -1,8 +1,9 @@
 export interface User extends UserQuery {
+  token?: string;
   id?: string;
-  email: string;
+  email?: string;
   pseudo?: string;
-  firstName?: string;
+  name?: string;
   password?: string;
   biography?: string;
   avatar?: string;
@@ -12,6 +13,6 @@ export interface User extends UserQuery {
 }
 
 interface UserQuery {
-  message: string,
-  user: User
+  message?: string,
+  user?: User
 };

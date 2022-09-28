@@ -16,24 +16,6 @@ function CustomHeader() {
     );
 }
 
-const StackOptions = new Map();
-StackOptions.set("globalOptions", {
-  headerLeft: () => <CustomHeader />,
-  headerStyle: {
-    backgroundColor: "hsla(0, 0%, 94%, 1)",
-    shadowColor: "transparent",
-  },
-  headerBackground: () => (
-    <Pressable style={{ flex: 1 }} onPress={() => {}} />
-  ),
-  animationTypeForReplace: "push",
-  headerTitle: '',
-  gestureEnabled: false,
-  headerShown: true,
-});
-
-export {StackOptions};
-
 export default function Logo() {
   const colorScheme = useColorScheme();
   const floatingAnimation = useRef(new Animated.Value(0)).current;
@@ -58,6 +40,7 @@ export default function Logo() {
   const styles = StyleSheet.create({
     logoContainer: {
       backgroundColor: "transparent",
+      justifyContent: "flex-start",
     },
     letterContainer: {
       flexDirection: "row",

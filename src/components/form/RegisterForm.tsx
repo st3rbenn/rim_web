@@ -24,14 +24,14 @@ function RegisterForm({ navigation }: RootTabScreenProps<"RegisterScreen">) {
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [pseudo, setPseudo] = useState<string>("");
-  const [firstname, setFirstname] = useState<string>("");
+  const [name, setName] = useState<string>("");
   const [birthDate, setBirthDate] = useState<Date | undefined>();
   const [isModalVisible, setModalVisible] = useState(false);
 
   const initialValues = {
     email: "",
     password: "",
-    firstname: "",
+    name: "",
     confirmPassword: "",
     pseudo: "",
     birthDate: "",
@@ -49,10 +49,10 @@ function RegisterForm({ navigation }: RootTabScreenProps<"RegisterScreen">) {
     email: string()
       .email(() => "L'email n'est pas valide")
       .required(() => "L'email est requis"),
-    firstname: string()
+    name: string()
       .required(() => "Le prénom est requis")
       .min(2, "Le prénom doit contenir au moins 2 caractères")
-      .max(50, "Le prénom doit contenir au plus 50 caractères"),
+      .max(20, "Le prénom doit contenir au plus 50 caractères"),
     password: string()
       .required("Le mot de passe est requis")
       .matches(
@@ -97,10 +97,9 @@ function RegisterForm({ navigation }: RootTabScreenProps<"RegisterScreen">) {
         email,
         password,
         pseudo,
-        firstname,
+        name,
         birthDate,
       };
-      console.log(user);
       const res = await dispatch(register(user));
 			// @ts-ignore
 			if (res.meta.requestStatus === "rejected") {
@@ -155,17 +154,17 @@ function RegisterForm({ navigation }: RootTabScreenProps<"RegisterScreen">) {
               )}
             </Stack>
             <Stack spacing={10}>
-              <Text style={styles.label}>Prénom</Text>
+              <Text style={styles.label}>Nom</Text>
               <NativeInput
                 style={styles.input}
-                placeholder="Prénom"
-                onChangeText={handleChange("firstname")}
-                onBlur={handleBlur("firstname")}
-                value={values.firstname}
-                onChange={(e) => setFirstname(e.nativeEvent.text)}
+                placeholder="nom"
+                onChangeText={handleChange("name")}
+                onBlur={handleBlur("name")}
+                value={values.name}
+                onChange={(e) => setName(e.nativeEvent.text)}
               />
-              {errors.firstname && touched.firstname && (
-                <Text style={styles.errorMsg}>{errors.firstname}</Text>
+              {errors.name && touched.name && (
+                <Text style={styles.errorMsg}>{errors.name}</Text>
               )}
             </Stack>
             <Stack spacing={10}>

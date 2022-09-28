@@ -7,6 +7,6 @@ export default async function AuthHeader(){
   if(token){
     return { 'x-access-token': token };
   } else {
-    return {};
+    console.log('no token');
   }
 }
