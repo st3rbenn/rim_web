@@ -1,8 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { User } from "../models/user";
-import { authService, userService } from "../services/services";
+import { authService, userService, postService } from "../services/services";
 import { Post } from "../models/post";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export interface RootState {
   loadingUser?: boolean;
@@ -11,18 +10,15 @@ export interface RootState {
   avatarUrl?: string;
   userToken?: string;
   loadingUserPosts?: boolean;
-  userPosts?: Post[];
+  posts?: Post[];
   isPremium?: boolean;
   uploading?: boolean;
 }
 
 const initialState: RootState = {
-  userPosts: [],
+  posts: [],
   isPremium: false,
-  uploading: false,
 };
-
-const { setItem, getItem } = AsyncStorage;
 
 export const register = createAsyncThunk(
   "auth/signup",
@@ -35,9 +31,7 @@ export const authentication = createAsyncThunk<User, {}>(
     try {
       const token = await authService.authenticate(userV);
 
-      const user = await userService.profile();
-
-      return { user: user.user, token: token.token };
+      return {token: token.token };
     } catch (error) {
       return error;
     }
@@ -82,6 +76,18 @@ export const uploadFile = createAsyncThunk(
   }
 );
 
+export const init = createAsyncThunk<Pick<RootState, "posts" | "user">>(
+  "user/init",
+  async () => {
+    const [userPosts, user] = await Promise.all([
+      postService.getUserPosts(),
+      userService.profile(),
+    ]);
+
+    return { posts: userPosts, user: user.user };
+  }
+);
+
 export const mainSlice = createSlice({
   name: "root", // name of the slice
   initialState,
@@ -107,9 +113,11 @@ export const mainSlice = createSlice({
       .addCase(uploadFile.pending, (state) => {
         state.uploading = true;
       })
+      .addCase(init.pending, (state) => {
+        state.loadingUserPosts = true;
+      })
       .addCase(authentication.fulfilled, (state, action) => {
         state.userToken = action.payload.token;
-        state.user = action.payload.user;
         state.loadingUser = false;
       })
       .addCase(reloadProfile.fulfilled, (state, action) => {
@@ -122,6 +130,11 @@ export const mainSlice = createSlice({
       })
       .addCase(register.fulfilled, (state) => {
         state.loadingUser = false;
+      })
+      .addCase(init.fulfilled, (state, action) => {
+        state.user = action.payload.user;
+        state.posts = action.payload.posts;
+        state.loadingUserPosts = false;
       })
       .addCase(uploadFile.fulfilled, (state, action) => {
         state.avatarUrl = action.payload.file
