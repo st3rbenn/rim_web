@@ -3,26 +3,24 @@ import { REACT_APP_API_URL } from "@env";
 import { User } from "../models/User";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import jwt_decode from 'jwt-decode';
-import AuthHeader from './AuthHeader';
-import * as SecureStore from 'expo-secure-store';
-const {getItem} = AsyncStorage;
+import jwt_decode from "jwt-decode";
+import AuthMiddleware from "./AuthHeader";
+const { getItem } = AsyncStorage;
 
 class UserService {
   async profile(): Promise<User> {
     try {
-      const accessToken = await AuthHeader();
-      const decoded: User = await jwt_decode(accessToken["x-access-token"]);
+      const accessToken = await AuthMiddleware();
+      const decoded: User = await jwt_decode(accessToken["Authorization"]);
 
-      const options = {
-        "Content-Type": "application/x-www-form-urlencoded",
-        ...accessToken
-      }
+      const response = await axios.get(
+        `${REACT_APP_API_URL}/user/${decoded.id}`,
+        {
+          method: "GET",
+          headers: accessToken,
+        }
+      );
 
-      const response = await axios.get(`${REACT_APP_API_URL}/user/${decoded.id}`, {
-        method: "GET",
-        headers: options,
-      })
       return response.data;
     } catch (error) {
       return error;
@@ -31,24 +29,46 @@ class UserService {
 
   async edit(user: User): Promise<User> {
     try {
-      const accessToken = await AuthHeader();
-      const decoded: User = await jwt_decode(accessToken["x-access-token"]);
-
-      const options = {
-        method: "POST",
-        "Content-Type": "application/x-www-form-urlencoded",
-        ...accessToken,
-      }
+      const accessToken = await AuthMiddleware();
+      const decoded: User = await jwt_decode(accessToken["Authorization"]);
 
       const body = {
         userId: decoded.id,
-        ...user
-      }
+        ...user,
+      };
 
-      const response = await axios.post(`${REACT_APP_API_URL}/user/edit`, {
-        headers: options,
-        ...body
-      })
+      const response = await axios.post(
+        `${REACT_APP_API_URL}/user/edit`,
+        body,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...accessToken,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      return error;
+    }
+  }
+
+  async upload(file: FormData): Promise<any> {
+    try {
+      const accessToken = await AuthMiddleware();
+
+      const response = await axios.post(`${REACT_APP_API_URL}/upload`, file, {
+        method: "POST",
+        headers: {
+          "Content-Type": "multipart/form-data",
+          ...accessToken,
+        },
+        transformRequest: (file: FormData) => {
+          return file;
+        },
+      });
       return response.data;
     } catch (error) {
       return error;

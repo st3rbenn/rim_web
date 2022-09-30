@@ -1,12 +1,15 @@
+import { User } from './../models/user';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { getItem } = AsyncStorage;
 
-export default async function AuthHeader(){
+export default async function AuthMiddleware(){
   const token = await getItem('token');
+
+  //if token return barrer token pattern else return empty object
   if(token){
-    return { 'x-access-token': token };
+    return { 'Authorization': 'Bearer ' + token };
   } else {
-    console.log('no token');
+    return {};
   }
 }

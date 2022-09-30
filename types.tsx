@@ -18,7 +18,7 @@ export type RootStackParamList = {
   RegisterScreen: undefined;
   LogInScreen: undefined;
   Home: undefined;
-  Profile: undefined;
+  ProfileTab: undefined;
   EditProfile: undefined;
   Settings: undefined;
   Modal: undefined;
@@ -36,7 +36,7 @@ export type RootTabParamList = {
   Home: undefined;
   Search: undefined;
   Notification: undefined;
-  Profile: undefined;
+  ProfileTab: undefined;
 };
 
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> = CompositeScreenProps<

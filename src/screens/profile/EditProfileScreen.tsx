@@ -1,4 +1,4 @@
-import { Keyboard, StyleSheet, TouchableWithoutFeedback } from "react-native";
+import { Keyboard, ScrollView, StyleSheet, TouchableWithoutFeedback } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Stack, Text } from "@react-native-material/core";
 import { StatusBar } from "expo-status-bar";
@@ -14,9 +14,11 @@ function EditProfileScreen({ navigation }: any) {
         setAccept={setAccept}
       />
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <Stack style={styles.container} spacing={50}>
-          <EditProfileForm navigation={navigation} handleAccept={accept}/>
-        </Stack>
+        <ScrollView>
+          <Stack style={styles.container} spacing={50}>
+            <EditProfileForm navigation={navigation} handleAccept={accept}/>
+          </Stack>
+        </ScrollView>
       </TouchableWithoutFeedback>
       <StatusBar style="auto" />
     </>
@@ -28,8 +30,8 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 16,
     marginRight: 16,
-    marginBottom: 100,
     marginTop: 20,
+    marginBottom: 100,
   },
   infoBox: {
     alignItems: "flex-start",

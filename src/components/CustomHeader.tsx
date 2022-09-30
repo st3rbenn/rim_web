@@ -1,16 +1,10 @@
 import { Button, Pressable, Stack, Text } from "@react-native-material/core";
-import React, {
-  useState,
-  useEffect,
-  ReactPropTypes,
-  Dispatch,
-  SetStateAction,
-} from "react";
+import React, { useState, useEffect, Dispatch, SetStateAction } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../store";
 import Logo from "./Logo";
 import { Feather, Ionicons } from "@expo/vector-icons";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 interface CustomHeaderProps {
@@ -27,9 +21,9 @@ export default function CustomHeader({ title, setAccept }: CustomHeaderProps) {
   const [isEditProfileTab, setIsEditProfileTab] = useState<boolean>(false);
   const navigation = useNavigation();
 
-  const refreshHeaderStatus = () => {
-    if (title === userData?.pseudo) {
-      setTitleToDisplay(userData?.pseudo);
+  useEffect(() => {
+    if (title === userData?.name) {
+      setTitleToDisplay(userData?.name);
       setIsProfileTab(true);
       setIsEditProfileTab(false);
     } else if (title === "HomeTab") {
@@ -48,16 +42,12 @@ export default function CustomHeader({ title, setAccept }: CustomHeaderProps) {
       setTitleToDisplay("Modification");
       setIsProfileTab(false);
       setIsEditProfileTab(true);
-    }
-  }
-
-  useEffect(() => {
-    refreshHeaderStatus();
-    return () => {
+    } else {
+      setTitleToDisplay("");
       setIsProfileTab(false);
       setIsEditProfileTab(false);
-    };
-  }, [userData]);
+    }
+  }, [title]);
 
   const styles = StyleSheet.create({
     container: tokenAuth
@@ -107,7 +97,7 @@ export default function CustomHeader({ title, setAccept }: CustomHeaderProps) {
       )}
       {isEditProfileTab && (
         <Stack style={styles.editProfilContainer}>
-          <Pressable onPress={() => navigation.goBack()} pressEffect="none">
+          <Pressable onPress={() => navigation.navigate('ProfileTab')} pressEffect="none">
             <Ionicons name="ios-arrow-back" size={23} />
           </Pressable>
           <Text style={styles.Heading}>{titleToDisplay}</Text>

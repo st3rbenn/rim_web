@@ -8,18 +8,21 @@ export interface RootState {
   loadingUser?: boolean;
   reloadUser?: boolean;
   user?: User;
+  avatarUrl?: string;
   userToken?: string;
   loadingUserPosts?: boolean;
   userPosts?: Post[];
   isPremium?: boolean;
+  uploading?: boolean;
 }
 
 const initialState: RootState = {
   userPosts: [],
   isPremium: false,
+  uploading: false,
 };
 
-const { setItem } = AsyncStorage;
+const { setItem, getItem } = AsyncStorage;
 
 export const register = createAsyncThunk(
   "auth/signup",
@@ -30,10 +33,9 @@ export const authentication = createAsyncThunk<User, {}>(
   "auth/login",
   async (userV: User) => {
     try {
-      const [token, user] = await Promise.all([
-        authService.authenticate(userV),
-        userService.profile(),
-      ]);
+      const token = await authService.authenticate(userV);
+
+      const user = await userService.profile();
 
       return { user: user.user, token: token.token };
     } catch (error) {
@@ -68,6 +70,18 @@ export const updateProfile = createAsyncThunk<User, {}>(
   }
 );
 
+export const uploadFile = createAsyncThunk(
+  "upload",
+  async (file: FormData) => {
+    try {
+      const response = await userService.upload(file);
+      return response;
+    } catch (error) {
+      return error;
+    }
+  }
+);
+
 export const mainSlice = createSlice({
   name: "root", // name of the slice
   initialState,
@@ -90,6 +104,9 @@ export const mainSlice = createSlice({
       .addCase(updateProfile.pending, (state) => {
         state.loadingUser = true;
       })
+      .addCase(uploadFile.pending, (state) => {
+        state.uploading = true;
+      })
       .addCase(authentication.fulfilled, (state, action) => {
         state.userToken = action.payload.token;
         state.user = action.payload.user;
@@ -106,10 +123,14 @@ export const mainSlice = createSlice({
       .addCase(register.fulfilled, (state) => {
         state.loadingUser = false;
       })
+      .addCase(uploadFile.fulfilled, (state, action) => {
+        state.avatarUrl = action.payload.file
+        state.uploading = false;
+      })
       .addCase(logOut.fulfilled, (state) => {
         state.user = undefined;
         state.userToken = undefined;
-        state.loadingUser = undefined;
+        state.loadingUser = false;
       });
   },
 });

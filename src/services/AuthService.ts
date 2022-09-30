@@ -2,8 +2,9 @@
 import { REACT_APP_API_URL } from "@env";
 import { User } from "../models/User";
 import axios, { AxiosResponse } from "axios";
-import * as SecureStore from 'expo-secure-store';
-const { deleteItemAsync, setItemAsync } = SecureStore;
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const { getItem, setItem, removeItem } = AsyncStorage;
 
 class AuthService {
   async register(user: User): Promise<AxiosResponse> {
@@ -32,7 +33,7 @@ class AuthService {
         ...user,
       });
 
-      await setItemAsync("token", response.data.token);
+      await setItem("token", response.data.token);
 
       return response.data;
     } catch (error) {
@@ -42,7 +43,7 @@ class AuthService {
   }
 
   async logOut() {
-    return await deleteItemAsync("token");
+    return await removeItem("token");
   }
 }
 

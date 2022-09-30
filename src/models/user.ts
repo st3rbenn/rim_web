@@ -6,10 +6,11 @@ export interface User extends UserQuery {
   name?: string;
   password?: string;
   biography?: string;
-  avatar?: string;
+  avatar?: any;
   birthDate?: Date;
   nbFollowers?: number;
   nbFollowed?: number;
+  exp?: number;
 }
 
 interface UserQuery {

@@ -3,19 +3,6 @@ import { Animated, Pressable, StyleSheet, useColorScheme } from "react-native";
 import { useRef, useEffect } from "react";
 import { Stack } from "@react-native-material/core";
 
-function CustomHeader() {
-  return (
-    <Pressable
-      onPress={() => {
-        console.log("press");
-      }}
-      style={{flex: 0.9, alignItems: 'center', justifyContent: 'center'}}
-    >
-      <Logo />
-    </Pressable>
-    );
-}
-
 export default function Logo() {
   const colorScheme = useColorScheme();
   const floatingAnimation = useRef(new Animated.Value(0)).current;
@@ -35,7 +22,7 @@ export default function Logo() {
         }),
       ])
     ).start();
-  }, [floatingAnimation]);
+  });
 
   const styles = StyleSheet.create({
     logoContainer: {

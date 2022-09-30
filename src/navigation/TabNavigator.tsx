@@ -133,8 +133,8 @@ function TabNavigator() {
           },
         }}
         listeners={({ navigation, route }) => ({
-          tabPress: (e) => {
-            setCurrentRoute(userData?.pseudo);
+          focus: (e) => {
+            setCurrentRoute(userData?.name);
           },
         })}
       />

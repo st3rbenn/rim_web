@@ -1,6 +1,6 @@
 import { StyleSheet, View, ScrollView, RefreshControl } from "react-native";
 import React, { useCallback } from "react";
-import { Button, Stack, Avatar, Text } from "@react-native-material/core";
+import { Button, Stack, Avatar, Text, FAB } from "@react-native-material/core";
 import { RootState, useAppThunkDispatch } from "../../store";
 import { logOut, reloadProfile } from "../../store/mainslice";
 import { User } from "../../models/user";
@@ -19,7 +19,7 @@ function ProfileScreen({ navigation }: ProfileProps) {
   const [userBirthDate, setUserBirthDate] = useState<string>("");
   const [isDropDownFavListOpen, setIsDropDownFavListOpen] =
     useState<boolean>(false);
-    
+
 
   const dispatch = useAppThunkDispatch();
 
@@ -82,34 +82,35 @@ function ProfileScreen({ navigation }: ProfileProps) {
         </Stack>
       </Stack>
       <Stack style={styles.infoContainer}>
-        <Text style={styles.pseudo}>{user?.name}</Text>
+        <Text style={styles.pseudo}>@{user?.pseudo}</Text>
         {user?.biography && (
           <Text style={styles.biography}>{user?.biography}</Text>
         )}
       </Stack>
       <Stack style={styles.btnContainer}>
-        <Button
-          style={{ width: "88%", marginRight: 7 }}
-          title="Modifier mon profil"
+        <FAB
+          style={styles.btnEdit}
+          labelContainerStyle={{ width: "100%", alignItems: "center" }}
+          label={() => (
+            <Text style={{ fontSize: 12, fontWeight: 'bold' }}>Modifier mon profil</Text>
+          )}
+          size="mini"
+          variant="extended"
           color="white"
           pressEffect="none"
-          variant="contained"
-          uppercase={false}
           onPress={() => navigation.navigate("EditProfile")}
-        ></Button>
+        ></FAB>
         <Button
-          style={{ width: "10%", alignItems: "center" }}
+          style={styles.btnShowMore}
           title={() =>
             !isDropDownFavListOpen ? (
               <MaterialIcons name="arrow-drop-down" size={20} />
             ) : (
               <MaterialIcons name="arrow-drop-up" size={20} />
-            )
-          }
+            )}
           color="white"
           pressEffect="none"
           variant="contained"
-          uppercase={false}
           onPress={handleDropDownFavList}
         ></Button>
       </Stack>
@@ -140,6 +141,27 @@ const styles = StyleSheet.create({
     marginTop: 25,
     flexDirection: "row",
   },
+  btnEdit: {
+    width: "80%",
+    backgroundColor: "#F5F5F5",
+    borderColor: "#F5F5F5",
+    borderWidth: 1,
+    marginRight: 10,
+    marginLeft: 15,
+    borderRadius: 10,
+    shadowOffset: { width: 0, height: 0 },
+    shadowRadius: 2,
+  },
+  btnShowMore: {
+    borderRadius: 10,
+    backgroundColor: "#F5F5F5",
+    borderColor: "#F5F5F5",
+    borderWidth: 1,
+    shadowOffset: { width: 0, height: 0 },
+    shadowRadius: 2,
+    width: "10%",
+    alignItems: "center",
+  },
   avatar: {
     width: 85,
     height: 85,
@@ -147,11 +169,12 @@ const styles = StyleSheet.create({
   },
   pseudo: {
     fontSize: 15,
+    fontWeight: "bold",
     marginLeft: 5,
   },
   biography: {
     fontSize: 15,
-    marginTop: 5,
+    marginTop: 10,
   },
   name: {
     fontSize: 19,
