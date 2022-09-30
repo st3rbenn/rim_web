@@ -8,19 +8,24 @@ import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { Post } from "../../models/post";
+import SettingsModal from "../../components/SettingsModal";
 
 interface ProfileProps {
   navigation: any;
+  isSettingsModalOpen: boolean;
+  setIsSettingsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-function ProfileScreen({ navigation }: ProfileProps) {
+function ProfileScreen(props: ProfileProps) {
+  const { navigation, isSettingsModalOpen, setIsSettingsModalOpen } = props;
   let user = useSelector((state: RootState) => state.user);
   let loading = useSelector((state: RootState) => state.reloadUser);
+  const userPosts = useSelector((state: Post) => state.posts);
+
   const [userBirthDate, setUserBirthDate] = useState<string>("");
   const [isDropDownFavListOpen, setIsDropDownFavListOpen] =
     useState<boolean>(false);
-
-
   const dispatch = useAppThunkDispatch();
 
   const handleDisconnect = async () => {
@@ -90,7 +95,7 @@ function ProfileScreen({ navigation }: ProfileProps) {
       <Stack style={styles.btnContainer}>
         <FAB
           style={styles.btnEdit}
-          labelContainerStyle={{ width: "100%", alignItems: "center" }}
+          labelContainerStyle={{ width: "100%", alignItems: "center", marginTop: 2 }}
           label={() => (
             <Text style={{ fontSize: 12, fontWeight: 'bold' }}>Modifier mon profil</Text>
           )}
@@ -120,6 +125,9 @@ function ProfileScreen({ navigation }: ProfileProps) {
         onPress={handleDisconnect}
         style={{ width: "100%", marginTop: 20 }}
       ></Button>
+      {isSettingsModalOpen && (
+        <SettingsModal isModalOpen={isSettingsModalOpen} setIsModalOpen={setIsSettingsModalOpen} />
+      )}
     </ScrollView>
   );
 }

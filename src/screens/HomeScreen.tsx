@@ -1,8 +1,18 @@
 import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Stack } from '@react-native-material/core'
+import { useAppThunkDispatch } from "../store";
+import { init } from '../store/mainslice'
+import { useSelector } from 'react-redux';
+import { Post } from '../models/post';
 
-const HomeScreen = () => {
+function HomeScreen() {
+  const dispatch = useAppThunkDispatch();
+
+  useEffect(() => {
+    dispatch(init());
+  }, []);
+
 
   return (
     <Stack>

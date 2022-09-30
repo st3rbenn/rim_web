@@ -13,37 +13,43 @@ const Tab = createBottomTabNavigator();
 
 function TabNavigator() {
   const [currentRoute, setCurrentRoute] = useState<string>("");
+  const [isSettingsModalOpen, setIsSettingsModalOpen] =
+    useState<boolean>(false);
   const userData = useSelector((state: RootState) => state.user);
   const tokenAuth = useSelector((state: any) => state.userToken);
-  
 
   return (
     <Tab.Navigator
       initialRouteName="Home"
       screenOptions={
-        tokenAuth
-          && {
-              header: ({navigation}) => <CustomHeader title={currentRoute} />,
-              headerTitle: '',
-              headerStyle: {
-                backgroundColor: 'hsla(0, 0%, 94%, 1)',
-                shadowColor: 'transparent',
-                width: '100%',
-              },
-              headerShown: true,
-              tabBarShowLabel: false,
-              tabBarStyle: {
-                position: "absolute",
-                bottom: 25,
-                left: 20,
-                right: 20,
-                elevation: 0,
-                backgroundColor: "#ffffff",
-                borderRadius: 15,
-                height: "10%",
-              },
-              tabBarActiveTintColor: "#9141F8",
-            }
+        tokenAuth && {
+          header: ({ navigation }) => (
+            <CustomHeader
+              title={currentRoute}
+              isProfileSettingsModalOpen={isSettingsModalOpen}
+              setIsProfileSettingsModalOpen={setIsSettingsModalOpen}
+            />
+          ),
+          headerTitle: "",
+          headerStyle: {
+            backgroundColor: "hsla(0, 0%, 94%, 1)",
+            shadowColor: "transparent",
+            width: "100%",
+          },
+          headerShown: true,
+          tabBarShowLabel: false,
+          tabBarStyle: {
+            position: "absolute",
+            bottom: 25,
+            left: 20,
+            right: 20,
+            elevation: 0,
+            backgroundColor: "#ffffff",
+            borderRadius: 15,
+            height: "10%",
+          },
+          tabBarActiveTintColor: "#9141F8",
+        }
       }
     >
       <Tab.Screen
@@ -117,7 +123,7 @@ function TabNavigator() {
       />
       <Tab.Screen
         name="ProfileTab"
-        children={props => <ProfileScreen {...props} />}
+        children={(props) => <ProfileScreen {...props} isSettingsModalOpen={isSettingsModalOpen} setIsSettingsModalOpen={setIsSettingsModalOpen} />}
         options={{
           tabBarIcon: ({ color, size }) => {
             return (

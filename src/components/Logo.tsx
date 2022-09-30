@@ -1,5 +1,5 @@
 import { Text, View } from "../components/Themed";
-import { Animated, Pressable, StyleSheet, useColorScheme } from "react-native";
+import { Animated, Pressable, StyleSheet, useColorScheme, SafeAreaView } from "react-native";
 import { useRef, useEffect } from "react";
 import { Stack } from "@react-native-material/core";
 
@@ -22,7 +22,7 @@ export default function Logo() {
         }),
       ])
     ).start();
-  });
+  }, [floatingAnimation]);
 
   const styles = StyleSheet.create({
     logoContainer: {
@@ -55,7 +55,7 @@ export default function Logo() {
   });
 
   return (
-    <Stack style={styles.logoContainer}>
+    <SafeAreaView style={styles.logoContainer}>
       <View style={styles.letterContainer}>
         <Animated.View
           style={{
@@ -100,6 +100,6 @@ export default function Logo() {
           <Text style={styles.letter_m}>M</Text>
         </Animated.View>
       </View>
-    </Stack>
+    </SafeAreaView>
   );
 }
