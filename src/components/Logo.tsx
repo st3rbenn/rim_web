@@ -3,37 +3,6 @@ import { Animated, Pressable, StyleSheet, useColorScheme } from "react-native";
 import { useRef, useEffect } from "react";
 import { Stack } from "@react-native-material/core";
 
-function CustomHeader() {
-  return (
-    <Pressable
-      onPress={() => {
-        console.log("press");
-      }}
-      style={{flex: 0.9, alignItems: 'center', justifyContent: 'center'}}
-    >
-      <Logo />
-    </Pressable>
-    );
-}
-
-const StackOptions = new Map();
-StackOptions.set("globalOptions", {
-  headerLeft: () => <CustomHeader />,
-  headerStyle: {
-    backgroundColor: "hsla(0, 0%, 94%, 1)",
-    shadowColor: "transparent",
-  },
-  headerBackground: () => (
-    <Pressable style={{ flex: 1 }} onPress={() => {}} />
-  ),
-  animationTypeForReplace: "push",
-  headerTitle: '',
-  gestureEnabled: false,
-  headerShown: true,
-});
-
-export {StackOptions};
-
 export default function Logo() {
   const colorScheme = useColorScheme();
   const floatingAnimation = useRef(new Animated.Value(0)).current;
@@ -53,11 +22,12 @@ export default function Logo() {
         }),
       ])
     ).start();
-  }, [floatingAnimation]);
+  });
 
   const styles = StyleSheet.create({
     logoContainer: {
       backgroundColor: "transparent",
+      justifyContent: "flex-start",
     },
     letterContainer: {
       flexDirection: "row",

@@ -6,20 +6,23 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export interface RootState {
   loadingUser?: boolean;
+  reloadUser?: boolean;
   user?: User;
+  avatarUrl?: string;
   userToken?: string;
   loadingUserPosts?: boolean;
   userPosts?: Post[];
-  errorMessage?: string;
   isPremium?: boolean;
+  uploading?: boolean;
 }
 
 const initialState: RootState = {
   userPosts: [],
   isPremium: false,
+  uploading: false,
 };
 
-const { setItem } = AsyncStorage;
+const { setItem, getItem } = AsyncStorage;
 
 export const register = createAsyncThunk(
   "auth/signup",
@@ -28,16 +31,13 @@ export const register = createAsyncThunk(
 
 export const authentication = createAsyncThunk<User, {}>(
   "auth/login",
-  async (user: User) => {
+  async (userV: User) => {
     try {
-      const token = await authService.authenticate(user);
-      if (token) {
-        await setItem("token", token.token);
-      }
+      const token = await authService.authenticate(userV);
 
-      const userData = await userService.profile();
+      const user = await userService.profile();
 
-      return [userData, token];
+      return { user: user.user, token: token.token };
     } catch (error) {
       return error;
     }
@@ -49,16 +49,43 @@ export const logOut = createAsyncThunk(
   async () => await authService.logOut()
 );
 
-export const reloadProfile = createAsyncThunk(
-  "user/profile",
-  async () => await userService.profile()
+export const reloadProfile = createAsyncThunk("user/profile", async () => {
+  try {
+    const user = await userService.profile();
+    return user;
+  } catch (error) {
+    return error;
+  }
+});
+
+export const updateProfile = createAsyncThunk<User, {}>(
+  "user/edit",
+  async (user: User) => {
+    try {
+      const userEdited = await userService.edit(user);
+      return userEdited;
+    } catch (error) {
+      return error;
+    }
+  }
+);
+
+export const uploadFile = createAsyncThunk(
+  "upload",
+  async (file: FormData) => {
+    try {
+      const response = await userService.upload(file);
+      return response;
+    } catch (error) {
+      return error;
+    }
+  }
 );
 
 export const mainSlice = createSlice({
   name: "root", // name of the slice
   initialState,
-  reducers: {
-  },
+  reducers: {},
   extraReducers: (builder) => {
     // extra reducers
     builder
@@ -72,24 +99,38 @@ export const mainSlice = createSlice({
         state.loadingUser = true;
       })
       .addCase(reloadProfile.pending, (state) => {
+        state.reloadUser = true;
+      })
+      .addCase(updateProfile.pending, (state) => {
         state.loadingUser = true;
       })
+      .addCase(uploadFile.pending, (state) => {
+        state.uploading = true;
+      })
       .addCase(authentication.fulfilled, (state, action) => {
-        state.userToken = action.payload[1];
-        state.user = action.payload[0].user;
+        state.userToken = action.payload.token;
+        state.user = action.payload.user;
         state.loadingUser = false;
       })
       .addCase(reloadProfile.fulfilled, (state, action) => {
+        state.user = action.payload.user;
+        state.reloadUser = false;
+      })
+      .addCase(updateProfile.fulfilled, (state, action) => {
         state.user = action.payload.user;
         state.loadingUser = false;
       })
       .addCase(register.fulfilled, (state) => {
         state.loadingUser = false;
       })
+      .addCase(uploadFile.fulfilled, (state, action) => {
+        state.avatarUrl = action.payload.file
+        state.uploading = false;
+      })
       .addCase(logOut.fulfilled, (state) => {
         state.user = undefined;
         state.userToken = undefined;
-        state.loadingUser = undefined;
+        state.loadingUser = false;
       });
   },
 });

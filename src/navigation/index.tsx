@@ -1,4 +1,4 @@
-import { NavigationContainer, DarkTheme, useNavigation, useRoute } from "@react-navigation/native";
+import { NavigationContainer, DarkTheme, createNavigationContainerRef } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { ColorSchemeName, Pressable } from "react-native";
 import NotFoundScreen from "../screens/NotFoundScreen";
@@ -8,30 +8,32 @@ import AuthStack from "./AuthStack";
 import MainStack from "./MainStack";
 import { useSelector } from "react-redux";
 import { RootState } from "../store";
-import Logo from "../components/Logo";
 import CustomHeader from "../components/CustomHeader";
+import { useEffect, useState } from "react";
 
-function RootNavigator() {
+export const navigationRef = createNavigationContainerRef()
+
+interface rootProps {
+  routeName: string;
+}
+
+function RootNavigator({ routeName }: rootProps) {
   const Stack = createNativeStackNavigator<RootStackParamList>();
   const tokenAuth = useSelector((state: any) => state.userToken);
   const userData = useSelector((state: RootState) => state.user);
 
   return (
     <Stack.Navigator screenOptions={!tokenAuth ? {
-      headerLeft: () => <CustomHeader />,
+      header: () => <CustomHeader title={routeName}/>,
       headerStyle: {
-        backgroundColor: "hsla(0, 0%, 94%, 1)",
+        backgroundColor: 'hsla(0, 0%, 94%, 1)',
       },
-      headerBackground: () => (
-        <Pressable style={{ flex: 1 }} onPress={() => {}} />
-      ),
       headerShadowVisible: false,
       animationTypeForReplace: "push",
       headerTitle: '',
       gestureEnabled: false,
-      headerShown: true,
     } : {headerShown: false}}>
-      {!!tokenAuth && tokenAuth?.token
+      {!!tokenAuth && tokenAuth
         ? MainStack({ Stack })
         : AuthStack({ Stack })}
       <Stack.Screen
@@ -48,6 +50,8 @@ export default function Navigation({
 }: {
   colorScheme: ColorSchemeName;
 }) {
+  const [routeName, setRouteName] = useState<string>();
+
   const DefaultTheme = {
     dark: false,
     colors: {
@@ -63,8 +67,16 @@ export default function Navigation({
     <NavigationContainer
       linking={LinkingConfiguration}
       theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+      ref={navigationRef}
+      onReady={() => {
+        setRouteName(navigationRef.getCurrentRoute().name)
+      }}
+      onStateChange={async () => {
+        const currentRouteName = navigationRef.getCurrentRoute().name;
+        setRouteName(currentRouteName);
+      }}
     >
-      <RootNavigator />
+      <RootNavigator routeName={routeName} />
     </NavigationContainer>
   );
 }

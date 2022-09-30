@@ -13,7 +13,6 @@ import React from "react";
 import TabNavigator from "./TabNavigator";
 import EditProfileScreen from "../screens/profile/EditProfileScreen";
 import SettingsScreen from "../screens/SettingsScreen";
-import CustomHeader from "../components/CustomHeader";
 
 interface Props {
   Stack: TypedNavigator<
@@ -36,14 +35,7 @@ function MainStack({ Stack }: Props) {
   return (
     <>
       <Stack.Screen name="Home" component={TabNavigator} />
-      <Stack.Screen name="EditProfile" children={() => <EditProfileScreen />} options={{
-        header: ({ route }) => (<CustomHeader />),
-        headerTitle: '',
-        headerStyle: {
-          backgroundColor: 'hsla(0, 0%, 94%, 1)',
-        },
-        headerShown: true,
-      }}/>
+      <Stack.Screen name="EditProfile" component={EditProfileScreen} />
       <Stack.Screen name="Settings" component={SettingsScreen} />
     </>
   );

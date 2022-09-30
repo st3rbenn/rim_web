@@ -2,9 +2,9 @@
 import { REACT_APP_API_URL } from "@env";
 import { User } from "../models/User";
 import axios, { AxiosResponse } from "axios";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const { removeItem } = AsyncStorage;
+const { getItem, setItem, removeItem } = AsyncStorage;
 
 class AuthService {
   async register(user: User): Promise<AxiosResponse> {
@@ -32,6 +32,9 @@ class AuthService {
         },
         ...user,
       });
+
+      await setItem("token", response.data.token);
+
       return response.data;
     } catch (error) {
       console.log(error);

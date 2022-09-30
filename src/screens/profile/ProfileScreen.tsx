@@ -1,25 +1,25 @@
 import { StyleSheet, View, ScrollView, RefreshControl } from "react-native";
 import React, { useCallback } from "react";
-import { Button, Stack, Avatar, Text } from "@react-native-material/core";
+import { Button, Stack, Avatar, Text, FAB } from "@react-native-material/core";
 import { RootState, useAppThunkDispatch } from "../../store";
 import { logOut, reloadProfile } from "../../store/mainslice";
 import { User } from "../../models/user";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 
 interface ProfileProps {
   navigation: any;
 }
 
 function ProfileScreen({ navigation }: ProfileProps) {
-  let userData = useSelector((state: RootState) => state.user);
-  const loading = useSelector((state: RootState) => state.loadingUser);
+  let user = useSelector((state: RootState) => state.user);
+  let loading = useSelector((state: RootState) => state.reloadUser);
   const [userBirthDate, setUserBirthDate] = useState<string>("");
   const [isDropDownFavListOpen, setIsDropDownFavListOpen] =
     useState<boolean>(false);
-  const route = useRoute();
+
 
   const dispatch = useAppThunkDispatch();
 
@@ -29,7 +29,7 @@ function ProfileScreen({ navigation }: ProfileProps) {
 
   const onRefresh = async () => {
     await dispatch(reloadProfile());
-  }
+  };
 
   const handleDropDownFavList = () => {
     console.log("drop down fav list");
@@ -37,31 +37,28 @@ function ProfileScreen({ navigation }: ProfileProps) {
   };
 
   useEffect(() => {
-    if (userData?.birthDate) {
-      const date = new Date(userData?.birthDate);
+    if (user?.birthDate) {
+      const date = new Date(user?.birthDate);
       const day = date.getDate();
       const month = date.getMonth() + 1;
       const year = date.getFullYear();
       setUserBirthDate(`${day}/${month}/${year}`);
     }
-  }, [userData]);
+  }, [user]);
 
   return (
     <ScrollView
       contentContainerStyle={styles.container}
       refreshControl={
-        <RefreshControl
-          refreshing={loading}
-          onRefresh={onRefresh}
-          size={1}
-        />
-    }>
+        <RefreshControl refreshing={loading} onRefresh={onRefresh} size={1} />
+      }
+    >
       <Stack>
         <Stack style={{ flexDirection: "row", alignItems: "center" }}>
           <Stack>
             <Avatar
               image={{
-                uri: "https://mui.com/static/images/avatar/1.jpg",
+                uri: user?.avatar ? user?.avatar : "https://picsum.photos/200",
               }}
               size={100}
             />
@@ -74,43 +71,46 @@ function ProfileScreen({ navigation }: ProfileProps) {
                 marginRight: 15,
               }}
             >
-              <Text style={styles.follow}>{userData?.nbFollowers}</Text>
+              <Text style={styles.follow}>{user?.nbFollowers}</Text>
               <Text style={styles.nbFollow}>Abonnés</Text>
             </Stack>
             <Stack style={{ justifyContent: "center", alignItems: "center" }}>
-              <Text style={styles.follow}>{userData?.nbFollowed}</Text>
+              <Text style={styles.follow}>{user?.nbFollowed}</Text>
               <Text style={styles.nbFollow}>Abonnements</Text>
             </Stack>
           </Stack>
         </Stack>
       </Stack>
       <Stack style={styles.infoContainer}>
-        <Text style={styles.pseudo}>@{userData?.pseudo}</Text>
-        {userData?.biography && (
-          <Text style={styles.biography}>{userData?.biography}</Text>
+        <Text style={styles.pseudo}>@{user?.pseudo}</Text>
+        {user?.biography && (
+          <Text style={styles.biography}>{user?.biography}</Text>
         )}
       </Stack>
       <Stack style={styles.btnContainer}>
-        <Button
-          style={{ width: "88%", marginRight: 7 }}
-          title="Modifier mon profil"
-          color="black"
-          variant="outlined"
-          uppercase={false}
+        <FAB
+          style={styles.btnEdit}
+          labelContainerStyle={{ width: "100%", alignItems: "center" }}
+          label={() => (
+            <Text style={{ fontSize: 12, fontWeight: 'bold' }}>Modifier mon profil</Text>
+          )}
+          size="mini"
+          variant="extended"
+          color="white"
+          pressEffect="none"
           onPress={() => navigation.navigate("EditProfile")}
-        ></Button>
+        ></FAB>
         <Button
-          style={{ width: "10%", alignItems: "center" }}
+          style={styles.btnShowMore}
           title={() =>
             !isDropDownFavListOpen ? (
-              <Ionicons name="arrow-down" size={15} />
+              <MaterialIcons name="arrow-drop-down" size={20} />
             ) : (
-              <Ionicons name="arrow-up" size={15} />
-            )
-          }
-          color="black"
-          variant="outlined"
-          uppercase={false}
+              <MaterialIcons name="arrow-drop-up" size={20} />
+            )}
+          color="white"
+          pressEffect="none"
+          variant="contained"
           onPress={handleDropDownFavList}
         ></Button>
       </Stack>
@@ -121,15 +121,6 @@ function ProfileScreen({ navigation }: ProfileProps) {
         style={{ width: "100%", marginTop: 20 }}
       ></Button>
     </ScrollView>
-    /*   <View>
-      <Text>ProfileScreen</Text>
-      <Text>{userData?.firstName}</Text>
-      <Text>{userData?.email}</Text>
-      <Text>{userBirthDate}</Text>
-      <Text>{userData?.pseudo}</Text>
-      <Text>{userData?.avatar}</Text>
-      <Button title="Se déconnecter" onPress={handleDisconnect}></Button>
-    </View> */
   );
 }
 
@@ -150,6 +141,27 @@ const styles = StyleSheet.create({
     marginTop: 25,
     flexDirection: "row",
   },
+  btnEdit: {
+    width: "80%",
+    backgroundColor: "#F5F5F5",
+    borderColor: "#F5F5F5",
+    borderWidth: 1,
+    marginRight: 10,
+    marginLeft: 15,
+    borderRadius: 10,
+    shadowOffset: { width: 0, height: 0 },
+    shadowRadius: 2,
+  },
+  btnShowMore: {
+    borderRadius: 10,
+    backgroundColor: "#F5F5F5",
+    borderColor: "#F5F5F5",
+    borderWidth: 1,
+    shadowOffset: { width: 0, height: 0 },
+    shadowRadius: 2,
+    width: "10%",
+    alignItems: "center",
+  },
   avatar: {
     width: 85,
     height: 85,
@@ -158,10 +170,11 @@ const styles = StyleSheet.create({
   pseudo: {
     fontSize: 15,
     fontWeight: "bold",
+    marginLeft: 5,
   },
   biography: {
     fontSize: 15,
-    marginTop: 5,
+    marginTop: 10,
   },
   name: {
     fontSize: 19,
