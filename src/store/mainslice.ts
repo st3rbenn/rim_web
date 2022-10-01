@@ -1,7 +1,7 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { User } from "../models/user";
-import { authService, userService, postService } from "../services/services";
-import { Post } from "../models/post";
+import {createSlice, createAsyncThunk, PayloadAction} from '@reduxjs/toolkit';
+import {User} from '../models/user';
+import {authService, userService, postService} from '../services/services';
+import {Post} from '../models/post';
 
 export interface RootState {
   loadingUser?: boolean;
@@ -20,76 +20,61 @@ const initialState: RootState = {
   isPremium: false,
 };
 
-export const register = createAsyncThunk(
-  "auth/signup",
-  async (user: User) => await authService.register(user)
+export const register = createAsyncThunk<Pick<User, 'token'>>(
+  'auth/signup',
+  // @ts-ignore
+  async (user: User) => await authService.register(user),
 );
 
-export const authentication = createAsyncThunk<User, {}>(
-  "auth/login",
-  async (userV: User) => {
-    try {
-      const token = await authService.authenticate(userV);
-
-      return {token: token.token };
-    } catch (error) {
-      return error;
-    }
-  }
-);
-
-export const logOut = createAsyncThunk(
-  "auth/logout",
-  async () => await authService.logOut()
-);
-
-export const reloadProfile = createAsyncThunk("user/profile", async () => {
+export const authentication = createAsyncThunk('auth/login', async (user: User) => {
   try {
-    const user = await userService.profile();
-    return user;
+    const token = await authService.authenticate(user);
+
+    return token.token;
   } catch (error) {
     return error;
   }
 });
 
-export const updateProfile = createAsyncThunk<User, {}>(
-  "user/edit",
-  async (user: User) => {
-    try {
-      const userEdited = await userService.edit(user);
-      return userEdited;
-    } catch (error) {
-      return error;
-    }
-  }
-);
+export const logOut = createAsyncThunk('auth/logout', async () => await authService.logOut());
 
-export const uploadFile = createAsyncThunk(
-  "upload",
-  async (file: FormData) => {
-    try {
-      const response = await userService.upload(file);
-      return response;
-    } catch (error) {
-      return error;
-    }
+// @ts-ignore
+export const reloadProfile = createAsyncThunk<User>('user/profile', async () => {
+  try {
+    const user = await userService.profile();
+    return user as User;
+  } catch (error) {
+    return error;
   }
-);
+});
 
-export const init = createAsyncThunk<Pick<RootState, "posts" | "user">>(
-  "user/init",
-  async () => {
-    const [userPosts, user] = await Promise.all([
-      postService.getUserPosts(),
-      userService.profile(),
-    ]);
-
-    return { posts: userPosts, user: user.user };
+// @ts-ignore
+export const updateProfile = createAsyncThunk<User>('user/edit', async (user: User) => {
+  try {
+    const userEdited = await userService.edit(user);
+    return userEdited as User;
+  } catch (error) {
+    return error;
   }
-);
+});
+
+export const uploadFile = createAsyncThunk('upload', async (file: FormData) => {
+  try {
+    const response = await userService.upload(file);
+    return response;
+  } catch (error) {
+    return error;
+  }
+});
+
+export const init = createAsyncThunk<Pick<RootState, 'posts' | 'user'>>('user/init', async () => {
+  const [userPosts, user] = await Promise.all([postService.getUserPosts(), userService.profile()]);
+
+  return {posts: userPosts, user: user.user};
+});
 
 export const mainSlice = createSlice({
-  name: "root", // name of the slice
+  name: 'root', // name of the slice
   initialState,
   reducers: {},
   extraReducers: (builder) => {
@@ -137,7 +122,7 @@ export const mainSlice = createSlice({
         state.loadingUserPosts = false;
       })
       .addCase(uploadFile.fulfilled, (state, action) => {
-        state.avatarUrl = action.payload.file
+        state.avatarUrl = action.payload.file;
         state.uploading = false;
       })
       .addCase(logOut.fulfilled, (state) => {

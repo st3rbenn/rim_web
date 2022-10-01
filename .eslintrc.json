@@ -22,14 +22,16 @@
   "plugins": ["react", "react-hooks", "@typescript-eslint", "prettier"],
   "rules": {
     "react/react-in-jsx-scope": "off",
-    "camelcase": "error",
+    "camelcase": "warn",
     "quotes": ["error", "single"],
     "semi": ["error", "always"],
     "no-trailing-spaces": "error",
-    "no-unused-vars": "error",
+    "no-unused-vars": "warn",
     "no-duplicate-imports": "error",
     "no-empty-function": "error",
-		"react/no-unescaped-entities": 0
+		"react/no-unescaped-entities": 0,
+    "@typescript-eslint/ban-ts-comment": "warn",
+    "react/no-children-prop": ["off"]
   },
   "settings": {
     "import/resolver": {

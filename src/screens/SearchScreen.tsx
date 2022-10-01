@@ -1,6 +1,6 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
-import { useAppThunkDispatch } from "../store";
+import {StyleSheet, Text, View} from 'react-native';
+import React from 'react';
+import {useAppThunkDispatch} from '../store';
 
 function SearchScreen() {
   const dispatch = useAppThunkDispatch();
@@ -9,9 +9,9 @@ function SearchScreen() {
     <View>
       <Text>SearchScreen</Text>
     </View>
-  )
+  );
 }
 
-export default SearchScreen
+export default SearchScreen;
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({});

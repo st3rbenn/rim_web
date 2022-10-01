@@ -1,18 +1,11 @@
-import {
-  ParamListBase,
-  StackNavigationState,
-  TypedNavigator,
-} from "@react-navigation/native";
-import {
-  NativeStackNavigationEventMap,
-  NativeStackNavigationOptions,
-} from "@react-navigation/native-stack";
-import { NativeStackNavigatorProps } from "@react-navigation/native-stack/lib/typescript/src/types";
-import { RootStackParamList } from "../../types";
-import React from "react";
-import TabNavigator from "./TabNavigator";
-import EditProfileScreen from "../screens/profile/EditProfileScreen";
-import SettingsScreen from "../screens/SettingsScreen";
+import {ParamListBase, StackNavigationState, TypedNavigator} from '@react-navigation/native';
+import {NativeStackNavigationEventMap, NativeStackNavigationOptions} from '@react-navigation/native-stack';
+import {NativeStackNavigatorProps} from '@react-navigation/native-stack/lib/typescript/src/types';
+import {RootStackParamList} from '../../types';
+import React from 'react';
+import TabNavigator from './TabNavigator';
+import EditProfileScreen from '../screens/profile/EditProfileScreen';
+import SettingsScreen from '../screens/SettingsScreen';
 
 interface Props {
   Stack: TypedNavigator<
@@ -31,7 +24,7 @@ interface Props {
   >;
 }
 
-function MainStack({ Stack }: Props) {
+function MainStack({Stack}: Props) {
   return (
     <>
       <Stack.Screen name="Home" component={TabNavigator} />

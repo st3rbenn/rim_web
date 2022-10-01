@@ -1,4 +1,4 @@
-import { User } from "./user";
+import {User} from './user';
 
 export interface Post extends PostQuery {
   id: string;
@@ -11,5 +11,4 @@ export interface Post extends PostQuery {
 interface PostQuery {
   message?: string;
   posts?: Post[];
-};
-
+}

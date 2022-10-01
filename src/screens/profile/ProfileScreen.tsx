@@ -1,15 +1,14 @@
-import { StyleSheet, View, ScrollView, RefreshControl } from "react-native";
-import React, { useCallback } from "react";
-import { Button, Stack, Avatar, Text, FAB } from "@react-native-material/core";
-import { RootState, useAppThunkDispatch } from "../../store";
-import { logOut, reloadProfile } from "../../store/mainslice";
-import { User } from "../../models/user";
-import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import { Ionicons, MaterialIcons } from "@expo/vector-icons";
-import { Post } from "../../models/post";
-import SettingsModal from "../../components/SettingsModal";
+import {StyleSheet, View, ScrollView, RefreshControl} from 'react-native';
+import React, {useCallback, useEffect, useState} from 'react';
+import {Button, Stack, Avatar, Text, FAB} from '@react-native-material/core';
+import {RootState, useAppThunkDispatch} from '../../store';
+import {logOut, reloadProfile} from '../../store/mainslice';
+import {User} from '../../models/user';
+import {useSelector} from 'react-redux';
+import {useNavigation, useRoute} from '@react-navigation/native';
+import {Ionicons, MaterialIcons} from '@expo/vector-icons';
+import {Post} from '../../models/post';
+import SettingsModal from '../../components/SettingsModal';
 
 interface ProfileProps {
   navigation: any;
@@ -18,14 +17,13 @@ interface ProfileProps {
 }
 
 function ProfileScreen(props: ProfileProps) {
-  const { navigation, isSettingsModalOpen, setIsSettingsModalOpen } = props;
-  let user = useSelector((state: RootState) => state.user);
-  let loading = useSelector((state: RootState) => state.reloadUser);
+  const {navigation, isSettingsModalOpen, setIsSettingsModalOpen} = props;
+  const user = useSelector((state: RootState) => state.user);
+  const loading = useSelector((state: RootState) => state.reloadUser);
   const userPosts = useSelector((state: Post) => state.posts);
 
-  const [userBirthDate, setUserBirthDate] = useState<string>("");
-  const [isDropDownFavListOpen, setIsDropDownFavListOpen] =
-    useState<boolean>(false);
+  const [userBirthDate, setUserBirthDate] = useState<string>('');
+  const [isDropDownFavListOpen, setIsDropDownFavListOpen] = useState<boolean>(false);
   const dispatch = useAppThunkDispatch();
 
   const handleDisconnect = async () => {
@@ -37,7 +35,7 @@ function ProfileScreen(props: ProfileProps) {
   };
 
   const handleDropDownFavList = () => {
-    console.log("drop down fav list");
+    console.log('drop down fav list');
     setIsDropDownFavListOpen(!isDropDownFavListOpen);
   };
 
@@ -54,32 +52,28 @@ function ProfileScreen(props: ProfileProps) {
   return (
     <ScrollView
       contentContainerStyle={styles.container}
-      refreshControl={
-        <RefreshControl refreshing={loading} onRefresh={onRefresh} size={1} />
-      }
-    >
+      refreshControl={<RefreshControl refreshing={loading as boolean} onRefresh={onRefresh} size={1} />}>
       <Stack>
-        <Stack style={{ flexDirection: "row", alignItems: "center" }}>
+        <Stack style={{flexDirection: 'row', alignItems: 'center'}}>
           <Stack>
             <Avatar
               image={{
-                uri: user?.avatar ? user?.avatar : "https://picsum.photos/200",
+                uri: user?.avatar ? user?.avatar : 'https://picsum.photos/200',
               }}
               size={100}
             />
           </Stack>
-          <Stack style={{ flexDirection: "row", marginLeft: 60 }}>
+          <Stack style={{flexDirection: 'row', marginLeft: 60}}>
             <Stack
               style={{
-                justifyContent: "center",
-                alignItems: "center",
+                justifyContent: 'center',
+                alignItems: 'center',
                 marginRight: 15,
-              }}
-            >
+              }}>
               <Text style={styles.follow}>{user?.nbFollowers}</Text>
               <Text style={styles.nbFollow}>Abonnés</Text>
             </Stack>
-            <Stack style={{ justifyContent: "center", alignItems: "center" }}>
+            <Stack style={{justifyContent: 'center', alignItems: 'center'}}>
               <Text style={styles.follow}>{user?.nbFollowed}</Text>
               <Text style={styles.nbFollow}>Abonnements</Text>
             </Stack>
@@ -88,23 +82,18 @@ function ProfileScreen(props: ProfileProps) {
       </Stack>
       <Stack style={styles.infoContainer}>
         <Text style={styles.pseudo}>@{user?.pseudo}</Text>
-        {user?.biography && (
-          <Text style={styles.biography}>{user?.biography}</Text>
-        )}
+        {user?.biography && <Text style={styles.biography}>{user?.biography}</Text>}
       </Stack>
       <Stack style={styles.btnContainer}>
         <FAB
           style={styles.btnEdit}
-          labelContainerStyle={{ width: "100%", alignItems: "center", marginTop: 2 }}
-          label={() => (
-            <Text style={{ fontSize: 12, fontWeight: 'bold' }}>Modifier mon profil</Text>
-          )}
+          labelContainerStyle={{width: '100%', alignItems: 'center', marginTop: 2}}
+          label={() => <Text style={{fontSize: 12, fontWeight: 'bold'}}>Modifier mon profil</Text>}
           size="mini"
           variant="extended"
           color="white"
           pressEffect="none"
-          onPress={() => navigation.navigate("EditProfile")}
-        ></FAB>
+          onPress={() => navigation.navigate('EditProfile')}></FAB>
         <Button
           style={styles.btnShowMore}
           title={() =>
@@ -112,19 +101,18 @@ function ProfileScreen(props: ProfileProps) {
               <MaterialIcons name="arrow-drop-down" size={20} />
             ) : (
               <MaterialIcons name="arrow-drop-up" size={20} />
-            )}
+            )
+          }
           color="white"
           pressEffect="none"
           variant="contained"
-          onPress={handleDropDownFavList}
-        ></Button>
+          onPress={handleDropDownFavList}></Button>
       </Stack>
       <Button
         title="Se déconnecter"
         uppercase={false}
         onPress={handleDisconnect}
-        style={{ width: "100%", marginTop: 20 }}
-      ></Button>
+        style={{width: '100%', marginTop: 20}}></Button>
       {isSettingsModalOpen && (
         <SettingsModal isModalOpen={isSettingsModalOpen} setIsModalOpen={setIsSettingsModalOpen} />
       )}
@@ -142,33 +130,33 @@ const styles = StyleSheet.create({
   infoContainer: {
     marginLeft: 5,
     marginTop: 5,
-    flexDirection: "column",
-    alignItems: "flex-start",
+    flexDirection: 'column',
+    alignItems: 'flex-start',
   },
   btnContainer: {
     marginTop: 25,
-    flexDirection: "row",
+    flexDirection: 'row',
   },
   btnEdit: {
-    width: "80%",
-    backgroundColor: "#F5F5F5",
-    borderColor: "#F5F5F5",
+    width: '80%',
+    backgroundColor: '#F5F5F5',
+    borderColor: '#F5F5F5',
     borderWidth: 1,
     marginRight: 10,
     marginLeft: 15,
     borderRadius: 10,
-    shadowOffset: { width: 0, height: 0 },
+    shadowOffset: {width: 0, height: 0},
     shadowRadius: 2,
   },
   btnShowMore: {
     borderRadius: 10,
-    backgroundColor: "#F5F5F5",
-    borderColor: "#F5F5F5",
+    backgroundColor: '#F5F5F5',
+    borderColor: '#F5F5F5',
     borderWidth: 1,
-    shadowOffset: { width: 0, height: 0 },
+    shadowOffset: {width: 0, height: 0},
     shadowRadius: 2,
-    width: "10%",
-    alignItems: "center",
+    width: '10%',
+    alignItems: 'center',
   },
   avatar: {
     width: 85,
@@ -177,7 +165,7 @@ const styles = StyleSheet.create({
   },
   pseudo: {
     fontSize: 15,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginLeft: 5,
   },
   biography: {
@@ -186,15 +174,15 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 19,
-    color: "#666666",
+    color: '#666666',
   },
   follow: {
     fontSize: 19,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   nbFollow: {
     fontSize: 12,
-    color: "#666666",
+    color: '#666666',
   },
 });
 

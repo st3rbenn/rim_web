@@ -1,7 +1,6 @@
-import { Text, View } from "../components/Themed";
-import { Animated, Pressable, StyleSheet, useColorScheme, SafeAreaView } from "react-native";
-import { useRef, useEffect } from "react";
-import { Stack } from "@react-native-material/core";
+import {Text, View} from '../components/Themed';
+import {Animated, StyleSheet, useColorScheme, SafeAreaView} from 'react-native';
+import {useRef, useEffect} from 'react';
 
 export default function Logo() {
   const colorScheme = useColorScheme();
@@ -20,37 +19,37 @@ export default function Logo() {
           duration: 1500,
           useNativeDriver: true,
         }),
-      ])
+      ]),
     ).start();
   }, [floatingAnimation]);
 
   const styles = StyleSheet.create({
     logoContainer: {
-      backgroundColor: "transparent",
-      justifyContent: "flex-start",
+      backgroundColor: 'transparent',
+      justifyContent: 'flex-start',
     },
     letterContainer: {
-      flexDirection: "row",
-      backgroundColor: "transparent",
+      flexDirection: 'row',
+      backgroundColor: 'transparent',
     },
-    letter_r: {
+    letterR: {
       fontSize: 40,
-      fontWeight: "bold",
-      color: "#9141F8",
+      fontWeight: 'bold',
+      color: '#9141F8',
       marginRight: 5,
-      transform: [{ rotate: "-20deg" }, { translateY: 0 }],
+      transform: [{rotate: '-20deg'}, {translateY: 0}],
     },
-    letter_i: {
+    letterI: {
       fontSize: 25,
-      fontWeight: "bold",
-      color: colorScheme === "dark" ? "#FFFFFF" : "#000000",
-      transform: [{ translateY: 0 }],
+      fontWeight: 'bold',
+      color: colorScheme === 'dark' ? '#FFFFFF' : '#000000',
+      transform: [{translateY: 0}],
     },
-    letter_m: {
+    letterM: {
       fontSize: 40,
-      fontWeight: "bold",
-      color: colorScheme === "dark" ? "#FFFFFF" : "#000000",
-      transform: [{ rotate: "15deg" }, { translateY: 0 }],
+      fontWeight: 'bold',
+      color: colorScheme === 'dark' ? '#FFFFFF' : '#000000',
+      transform: [{rotate: '15deg'}, {translateY: 0}],
     },
   });
 
@@ -67,9 +66,8 @@ export default function Logo() {
                 }),
               },
             ],
-          }}
-        >
-          <Text style={styles.letter_r}>R</Text>
+          }}>
+          <Text style={styles.letterR}>R</Text>
         </Animated.View>
         <Animated.View
           style={{
@@ -81,9 +79,8 @@ export default function Logo() {
                 }),
               },
             ],
-          }}
-        >
-          <Text style={styles.letter_i}>i</Text>
+          }}>
+          <Text style={styles.letterI}>i</Text>
         </Animated.View>
         <Animated.View
           style={{
@@ -95,9 +92,8 @@ export default function Logo() {
                 }),
               },
             ],
-          }}
-        >
-          <Text style={styles.letter_m}>M</Text>
+          }}>
+          <Text style={styles.letterM}>M</Text>
         </Animated.View>
       </View>
     </SafeAreaView>

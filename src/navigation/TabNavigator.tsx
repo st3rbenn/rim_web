@@ -1,20 +1,19 @@
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import HomeScreen from "../screens/HomeScreen";
-import ProfileScreen from "../screens/profile/ProfileScreen";
-import SearchScreen from "../screens/SearchScreen";
-import { Feather, Ionicons } from "@expo/vector-icons";
-import NotificationScreen from "../screens/NotificationScreen";
-import { useSelector } from "react-redux";
-import { RootState } from "../store";
-import { useEffect, useState } from "react";
-import CustomHeader from "../components/CustomHeader";
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import HomeScreen from '../screens/HomeScreen';
+import ProfileScreen from '../screens/profile/ProfileScreen';
+import SearchScreen from '../screens/SearchScreen';
+import {Feather, Ionicons} from '@expo/vector-icons';
+import NotificationScreen from '../screens/NotificationScreen';
+import {useSelector} from 'react-redux';
+import {RootState} from '../store';
+import {useEffect, useState} from 'react';
+import CustomHeader from '../components/CustomHeader';
 
 const Tab = createBottomTabNavigator();
 
 function TabNavigator() {
-  const [currentRoute, setCurrentRoute] = useState<string>("");
-  const [isSettingsModalOpen, setIsSettingsModalOpen] =
-    useState<boolean>(false);
+  const [currentRoute, setCurrentRoute] = useState<string | undefined>('');
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState<boolean>(false);
   const userData = useSelector((state: RootState) => state.user);
   const tokenAuth = useSelector((state: any) => state.userToken);
 
@@ -23,40 +22,39 @@ function TabNavigator() {
       initialRouteName="Home"
       screenOptions={
         tokenAuth && {
-          header: ({ navigation }) => (
+          header: ({navigation}) => (
             <CustomHeader
               title={currentRoute}
               isProfileSettingsModalOpen={isSettingsModalOpen}
               setIsProfileSettingsModalOpen={setIsSettingsModalOpen}
             />
           ),
-          headerTitle: "",
+          headerTitle: '',
           headerStyle: {
-            backgroundColor: "hsla(0, 0%, 94%, 1)",
-            shadowColor: "transparent",
-            width: "100%",
+            backgroundColor: 'hsla(0, 0%, 94%, 1)',
+            shadowColor: 'transparent',
+            width: '100%',
           },
           headerShown: true,
           tabBarShowLabel: false,
           tabBarStyle: {
-            position: "absolute",
+            position: 'absolute',
             bottom: 25,
             left: 20,
             right: 20,
             elevation: 0,
-            backgroundColor: "#ffffff",
+            backgroundColor: '#ffffff',
             borderRadius: 15,
-            height: "10%",
+            height: '10%',
           },
-          tabBarActiveTintColor: "#9141F8",
+          tabBarActiveTintColor: '#9141F8',
         }
-      }
-    >
+      }>
       <Tab.Screen
         name="HomeTab"
         component={HomeScreen}
         options={{
-          tabBarIcon: ({ color, size }) => {
+          tabBarIcon: ({color, size}) => {
             return (
               <Ionicons
                 name="home-outline"
@@ -69,7 +67,7 @@ function TabNavigator() {
             );
           },
         }}
-        listeners={({ navigation, route }) => ({
+        listeners={({navigation, route}) => ({
           tabPress: (e) => {
             setCurrentRoute(route.name);
           },
@@ -79,7 +77,7 @@ function TabNavigator() {
         name="SearchTab"
         component={SearchScreen}
         options={{
-          tabBarIcon: ({ color, size }) => {
+          tabBarIcon: ({color, size}) => {
             return (
               <Ionicons
                 name="search"
@@ -92,7 +90,7 @@ function TabNavigator() {
             );
           },
         }}
-        listeners={({ navigation, route }) => ({
+        listeners={({navigation, route}) => ({
           tabPress: (e) => {
             setCurrentRoute(route.name);
           },
@@ -102,7 +100,7 @@ function TabNavigator() {
         name="NotificationTab"
         component={NotificationScreen}
         options={{
-          tabBarIcon: ({ color, size }) => {
+          tabBarIcon: ({color, size}) => {
             return (
               <Ionicons
                 name="notifications-outline"
@@ -115,7 +113,7 @@ function TabNavigator() {
             );
           },
         }}
-        listeners={({ navigation, route }) => ({
+        listeners={({navigation, route}) => ({
           tabPress: (e) => {
             setCurrentRoute(route.name);
           },
@@ -123,9 +121,15 @@ function TabNavigator() {
       />
       <Tab.Screen
         name="ProfileTab"
-        children={(props) => <ProfileScreen {...props} isSettingsModalOpen={isSettingsModalOpen} setIsSettingsModalOpen={setIsSettingsModalOpen} />}
+        children={(props) => (
+          <ProfileScreen
+            {...props}
+            isSettingsModalOpen={isSettingsModalOpen}
+            setIsSettingsModalOpen={setIsSettingsModalOpen}
+          />
+        )}
         options={{
-          tabBarIcon: ({ color, size }) => {
+          tabBarIcon: ({color, size}) => {
             return (
               <Feather
                 name="user"
@@ -138,7 +142,7 @@ function TabNavigator() {
             );
           },
         }}
-        listeners={({ navigation, route }) => ({
+        listeners={({navigation, route}) => ({
           focus: (e) => {
             setCurrentRoute(userData?.name);
           },

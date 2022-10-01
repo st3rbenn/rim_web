@@ -14,6 +14,6 @@ export interface User extends UserQuery {
 }
 
 interface UserQuery {
-  message?: string,
-  user?: User
-};
+  message?: string;
+  user?: User;
+}
