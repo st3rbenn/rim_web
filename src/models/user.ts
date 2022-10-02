@@ -17,3 +17,5 @@ interface UserQuery {
   message?: string;
   user?: User;
 }
+
+export type UserState = User;

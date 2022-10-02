@@ -1,12 +1,10 @@
-import {StyleSheet, View, ScrollView, RefreshControl} from 'react-native';
-import React, {useCallback, useEffect, useState} from 'react';
-import {Button, Stack, Avatar, Text, FAB} from '@react-native-material/core';
+import {StyleSheet, ScrollView, RefreshControl, Animated, useWindowDimensions} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {Button, Stack, Avatar, Text, FAB, Pressable} from '@react-native-material/core';
 import {RootState, useAppThunkDispatch} from '../../store';
-import {logOut, reloadProfile} from '../../store/mainslice';
-import {User} from '../../models/user';
+import {reloadProfile} from '../../store/mainslice';
 import {useSelector} from 'react-redux';
-import {useNavigation, useRoute} from '@react-navigation/native';
-import {Ionicons, MaterialIcons} from '@expo/vector-icons';
+import {MaterialIcons} from '@expo/vector-icons';
 import {Post} from '../../models/post';
 import SettingsModal from '../../components/SettingsModal';
 
@@ -25,10 +23,6 @@ function ProfileScreen(props: ProfileProps) {
   const [userBirthDate, setUserBirthDate] = useState<string>('');
   const [isDropDownFavListOpen, setIsDropDownFavListOpen] = useState<boolean>(false);
   const dispatch = useAppThunkDispatch();
-
-  const handleDisconnect = async () => {
-    await dispatch(logOut());
-  };
 
   const onRefresh = async () => {
     await dispatch(reloadProfile());
@@ -108,11 +102,6 @@ function ProfileScreen(props: ProfileProps) {
           variant="contained"
           onPress={handleDropDownFavList}></Button>
       </Stack>
-      <Button
-        title="Se déconnecter"
-        uppercase={false}
-        onPress={handleDisconnect}
-        style={{width: '100%', marginTop: 20}}></Button>
       {isSettingsModalOpen && (
         <SettingsModal isModalOpen={isSettingsModalOpen} setIsModalOpen={setIsSettingsModalOpen} />
       )}

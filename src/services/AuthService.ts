@@ -1,16 +1,15 @@
 import {User} from '../models/user';
-import axios, {AxiosResponse, AxiosError} from 'axios';
+import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as dotenv from 'dotenv';
-
-dotenv.config();
+// @ts-ignore
+import {API_URL} from '@env';
 
 const {setItem, removeItem} = AsyncStorage;
 
 class AuthService {
   async register(user: User): Promise<Pick<User, 'token'>> {
     try {
-      const response = await axios.post(`${process.env.API_URL}/auth/signup`, {
+      const response = await axios.post(`${API_URL}/auth/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -26,7 +25,7 @@ class AuthService {
 
   async authenticate(user: User) {
     try {
-      const response = await axios.post(`${process.env.API_URL}/auth/login`, {
+      const response = await axios.post(`${API_URL}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',

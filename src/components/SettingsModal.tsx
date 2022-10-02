@@ -1,7 +1,20 @@
-import React from 'react';
-import {Modal, StyleSheet, Text, Pressable, View, Animated} from 'react-native';
-import {Gesture, GestureDetector} from 'react-native-gesture-handler';
-import {useAnimatedStyle, useSharedValue} from 'react-native-reanimated';
+import {ListItem, Pressable} from '@react-native-material/core';
+import React, {useEffect, useState} from 'react';
+import {
+  Animated,
+  Modal,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  ScrollView,
+  StyleSheet,
+  useWindowDimensions,
+  View,
+} from 'react-native';
+import {RootState, useAppThunkDispatch} from '../store';
+import {logOut} from '../store/mainslice';
+import Icon from '@expo/vector-icons/MaterialCommunityIcons';
+import {Feather} from '@expo/vector-icons';
+import {useSelector} from 'react-redux';
 
 interface SettingsModalProps {
   isModalOpen: boolean;
@@ -9,52 +22,73 @@ interface SettingsModalProps {
 }
 
 function SettingsModal({isModalOpen, setIsModalOpen}: SettingsModalProps) {
-  const translationY = useSharedValue(0);
-  const gesture = Gesture.Pan().onUpdate((e) => {
-    translationY.value = e.translationY;
-  });
+  const dispatch = useAppThunkDispatch();
+  const userLoading = useSelector((state: RootState) => state.reloadUser);
 
-  const slideDownAnimation = useAnimatedStyle(() => {
-    return {
-      transform: [{translateY: 2}],
-    };
-  });
+  const [scrollY, setScrollY] = useState<number>(0);
+
+  const {height: windowHeight} = useWindowDimensions();
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
 
+  const handleDisconnect = async () => {
+    setIsModalOpen(false);
+    await dispatch(logOut());
+  };
+
+  useEffect(() => {
+    if (scrollY > 0) {
+      console.log('need to be prevented');
+    }
+  }, [scrollY]);
+
+  const handleStopDrag = () => {
+    if (scrollY <= -70) {
+      handleCloseModal();
+    }
+  };
+
   return (
-    <GestureDetector gesture={gesture}>
-      <Animated.View style={[styles.centeredView, slideDownAnimation]}>
-        <Modal animationType="slide" transparent={true} visible={isModalOpen}>
-          <View style={styles.centeredView}>
+    <Modal animationType="slide" transparent={true} visible={isModalOpen} onDismiss={() => console.log('disimissed')}>
+      <Pressable pressEffect="none" onPress={handleCloseModal}>
+        <ScrollView
+          onScroll={(ev) => setScrollY(ev.nativeEvent.contentOffset.y)}
+          scrollEventThrottle={16}
+          showsVerticalScrollIndicator={false}
+          onScrollEndDrag={handleStopDrag}>
+          <View style={[styles.centeredView, {height: windowHeight}]}>
             <View style={styles.modalView}>
-              <Text style={styles.modalText}>Hello World!</Text>
-              <Pressable style={[styles.button, styles.buttonClose]} onPress={handleCloseModal}>
-                <Text style={styles.textStyle}>Hide Modal</Text>
-              </Pressable>
+              <ListItem title="paramètres" leading={<Feather name="settings" size={22} />} pressEffect="none" />
+              <ListItem title="Enregistrer" leading={<Icon name="bookmark" size={22} />} pressEffect="none" />
+              <ListItem
+                title="Se déconnecter"
+                pressEffect="none"
+                leading={<Feather name="log-out" size={22} color="red" />}
+                onPress={handleDisconnect}
+                leadingMode="icon"
+              />
             </View>
           </View>
-        </Modal>
-      </Animated.View>
-    </GestureDetector>
+        </ScrollView>
+      </Pressable>
+    </Modal>
   );
 }
 
 const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'flex-end',
     marginTop: 22,
   },
   modalView: {
-    margin: 20,
+    height: '50%',
     backgroundColor: 'white',
     borderRadius: 20,
-    padding: 35,
-    alignItems: 'center',
+    padding: 15,
+    justifyContent: 'flex-start',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,

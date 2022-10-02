@@ -1,40 +1,35 @@
-import {
-  StyleSheet,
-  Text,
-  TextInput as NativeInput,
-  Keyboard,
-  KeyboardAvoidingView,
-} from "react-native";
-import Modal from "react-native-modal";
-import { Stack, Button } from "@react-native-material/core";
-import React, { useState } from "react";
-import { Formik } from "formik";
-import { object, string } from "yup";
-import { AxiosError } from "axios";
-import { User } from "../../models/user";
-import { useAppThunkDispatch } from "../../store";
-import { RootTabScreenProps } from "../../../types";
-import { register } from "../../store/mainslice";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import {StyleSheet, Text, TextInput as NativeInput, Keyboard, KeyboardAvoidingView} from 'react-native';
+import Modal from 'react-native-modal';
+import {Stack, Button} from '@react-native-material/core';
+import React, {useState} from 'react';
+import {Formik} from 'formik';
+import {object, string} from 'yup';
+import {AxiosError} from 'axios';
+import {User} from '../../models/user';
+import {useAppThunkDispatch} from '../../store';
+import {RootTabScreenProps} from '../../../types';
+import {register} from '../../store/mainslice';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import CustomErrorMessage from '../CustomErrorMessage';
 
-function RegisterForm({ navigation }: RootTabScreenProps<"RegisterScreen">) {
+function RegisterForm({navigation}: RootTabScreenProps<'RegisterScreen'>) {
   const dispatch = useAppThunkDispatch();
 
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [confirmPassword, setConfirmPassword] = useState<string>("");
-  const [pseudo, setPseudo] = useState<string>("");
-  const [name, setName] = useState<string>("");
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [confirmPassword, setConfirmPassword] = useState<string>('');
+  const [pseudo, setPseudo] = useState<string>('');
+  const [name, setName] = useState<string>('');
   const [birthDate, setBirthDate] = useState<Date | undefined>();
   const [isModalVisible, setModalVisible] = useState(false);
 
   const initialValues = {
-    email: "",
-    password: "",
-    name: "",
-    confirmPassword: "",
-    pseudo: "",
-    birthDate: "",
+    email: '',
+    password: '',
+    name: '',
+    confirmPassword: '',
+    pseudo: '',
+    birthDate: '',
   };
 
   const toggleModal = () => {
@@ -50,45 +45,33 @@ function RegisterForm({ navigation }: RootTabScreenProps<"RegisterScreen">) {
       .email(() => "L'email n'est pas valide")
       .required(() => "L'email est requis"),
     name: string()
-      .required(() => "Le prénom est requis")
-      .min(2, "Le prénom doit contenir au moins 2 caractères")
-      .max(20, "Le prénom doit contenir au plus 50 caractères"),
+      .required(() => 'Le prénom est requis')
+      .min(2, 'Le prénom doit contenir au moins 2 caractères')
+      .max(20, 'Le prénom doit contenir au plus 50 caractères'),
     password: string()
-      .required("Le mot de passe est requis")
+      .required('Le mot de passe est requis')
       .matches(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
-        "Le mot de passe doit contenir au moins 8 caractères, dont une majuscule, une minuscule et un chiffre"
+        'Le mot de passe doit contenir au moins 8 caractères, dont une majuscule, une minuscule et un chiffre',
       )
-      .min(8, "Le mot de passe doit contenir au moins 8 caractères"),
+      .min(8, 'Le mot de passe doit contenir au moins 8 caractères'),
     confirmPassword: string()
-      .required("La confirmation du mot de passe est requise")
-      .test(
-        "passwords-match",
-        "Les mots de passe ne correspondent pas",
-        matchPassword
-      ),
+      .required('La confirmation du mot de passe est requise')
+      .test('passwords-match', 'Les mots de passe ne correspondent pas', matchPassword),
     pseudo: string()
-      .required("Le pseudo est requis")
-      .min(3, "Le pseudo doit contenir au moins 3 caractères")
-      .max(20, "Le pseudo doit contenir au plus 20 caractères"),
+      .required('Le pseudo est requis')
+      .min(3, 'Le pseudo doit contenir au moins 3 caractères')
+      .max(20, 'Le pseudo doit contenir au plus 20 caractères'),
     birthDate: string()
-      .required("La date de naissance est requise")
-      .test(
-        "birthDate",
-        "Vous devez avoir plus de 18 ans pour vous inscrire",
-        () => {
-          if (birthDate) {
-            const today = new Date();
-            const eighteenYearsAgo = new Date(
-              today.getFullYear() - 18,
-              today.getMonth(),
-              today.getDate()
-            );
-            return true;
-          }
-          return false;
+      .required('La date de naissance est requise')
+      .test('birthDate', 'Vous devez avoir plus de 18 ans pour vous inscrire', () => {
+        if (birthDate) {
+          const today = new Date();
+          const eighteenYearsAgo = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+          return true;
         }
-      ),
+        return false;
+      }),
   });
 
   const handleSubmit = async () => {
@@ -100,15 +83,19 @@ function RegisterForm({ navigation }: RootTabScreenProps<"RegisterScreen">) {
         name,
         birthDate,
       };
+
       const res = await dispatch(register(user));
-			// @ts-ignore
-			if (res.meta.requestStatus === "rejected") {
-				alert("Une erreur est survenue");
-			} else {
-				navigation.navigate("LogInScreen");
-			}
+
+      if (res.meta.requestStatus === 'rejected') {
+        alert('Une erreur est survenue');
+      } else {
+        navigation.navigate('LogInScreen');
+      }
     } catch (error) {
       const err = error as AxiosError;
+      if (err.response?.status === 409) {
+        alert('Un compte existe déjà avec cet email');
+      }
       // @ts-ignore
       console.error(err.response?.data?.message);
       throw error;
@@ -120,90 +107,79 @@ function RegisterForm({ navigation }: RootTabScreenProps<"RegisterScreen">) {
       <Formik
         initialValues={initialValues}
         onSubmit={(values) => console.log(values)}
-        validationSchema={registerSchema}
-      >
-        {({ handleChange, handleBlur, values, errors, touched }) => (
+        validationSchema={registerSchema}>
+        {({handleChange, handleBlur, values, errors, touched}) => (
           <Stack spacing={25}>
             <Stack spacing={10}>
               <Text style={styles.label}>pseudo</Text>
               <NativeInput
                 placeholder="pseudo"
-                onChangeText={handleChange("pseudo")}
-                onBlur={handleBlur("pseudo")}
+                onChangeText={handleChange('pseudo')}
+                onBlur={handleBlur('pseudo')}
                 value={values.pseudo}
                 onChange={(e) => setPseudo(e.nativeEvent.text)}
                 style={styles.input}
                 collapsable={false}
               />
-              {errors.pseudo && touched.pseudo && (
-                <Text style={styles.errorMsg}>{errors.pseudo}</Text>
-              )}
+              <CustomErrorMessage assingTo="pseudo" errors={errors} touched={touched} />
             </Stack>
             <Stack spacing={10}>
               <Text style={styles.label}>email</Text>
               <NativeInput
                 style={styles.input}
                 placeholder="email"
-                onChangeText={handleChange("email")}
-                onBlur={handleBlur("email")}
+                onChangeText={handleChange('email')}
+                onBlur={handleBlur('email')}
                 value={values.email}
                 onChange={(e) => setEmail(e.nativeEvent.text)}
               />
-              {errors.email && touched.email && (
-                <Text style={styles.errorMsg}>{errors.email}</Text>
-              )}
+              <CustomErrorMessage assingTo="email" errors={errors} touched={touched} />
             </Stack>
             <Stack spacing={10}>
               <Text style={styles.label}>Nom</Text>
               <NativeInput
                 style={styles.input}
                 placeholder="nom"
-                onChangeText={handleChange("name")}
-                onBlur={handleBlur("name")}
+                onChangeText={handleChange('name')}
+                onBlur={handleBlur('name')}
                 value={values.name}
                 onChange={(e) => setName(e.nativeEvent.text)}
               />
-              {errors.name && touched.name && (
-                <Text style={styles.errorMsg}>{errors.name}</Text>
-              )}
+              <CustomErrorMessage assingTo="name" errors={errors} touched={touched} />
             </Stack>
             <Stack spacing={10}>
               <Text style={styles.label}>mot de passe</Text>
               <NativeInput
                 placeholder="mot de passe"
                 secureTextEntry={true}
-                onChangeText={handleChange("password")}
-                onBlur={handleBlur("password")}
+                onChangeText={handleChange('password')}
+                onBlur={handleBlur('password')}
                 value={values.password}
                 onChange={(e) => setPassword(e.nativeEvent.text)}
                 style={styles.input}
               />
-              {errors.password && touched.password && (
-                <Text style={styles.errorMsg}>{errors.password}</Text>
-              )}
+              <CustomErrorMessage assingTo="password" errors={errors} touched={touched} />
             </Stack>
             <Stack spacing={10}>
               <Text style={styles.label}>confirmer le mot de passe</Text>
               <NativeInput
                 placeholder="confirmer le mot de passe"
                 secureTextEntry={true}
-                onChangeText={handleChange("confirmPassword")}
-                onBlur={handleBlur("confirmPassword")}
+                onChangeText={handleChange('confirmPassword')}
+                onBlur={handleBlur('confirmPassword')}
                 value={values.confirmPassword}
                 onChange={(e) => setConfirmPassword(e.nativeEvent.text)}
                 style={styles.input}
               />
-              {errors.confirmPassword && touched.confirmPassword && (
-                <Text style={styles.errorMsg}>{errors.confirmPassword}</Text>
-              )}
+              <CustomErrorMessage assingTo="confirmPassword" errors={errors} touched={touched} />
             </Stack>
             <Stack spacing={25}>
               <Stack spacing={10}>
                 <Text style={styles.label}>votre date de naissance</Text>
                 <NativeInput
                   placeholder="date de naissance"
-                  onChangeText={handleChange("birthDate")}
-                  onBlur={handleBlur("birthDate")}
+                  onChangeText={handleChange('birthDate')}
+                  onBlur={handleBlur('birthDate')}
                   value={birthDate?.toLocaleDateString()}
                   style={styles.input}
                   onFocus={() => {
@@ -211,23 +187,17 @@ function RegisterForm({ navigation }: RootTabScreenProps<"RegisterScreen">) {
                     toggleModal();
                   }}
                 />
-                {errors.birthDate && touched.birthDate && (
-                  <Text style={styles.errorMsg}>{errors.birthDate}</Text>
-                )}
+                <CustomErrorMessage assingTo="birthDate" errors={errors} touched={touched} />
               </Stack>
               <Stack style={styles.buttonContainer} spacing={25}>
                 <Button
                   title="S'inscrire"
                   uppercase={false}
                   style={styles.button}
-                  onPress={() => handleSubmit()}
-                ></Button>
+                  onPress={() => handleSubmit()}></Button>
                 <Text>
                   Vous avez déjà un compte ?
-                  <Text
-                    onPress={() => navigation.navigate("LogInScreen")}
-                    style={{ color: "#3F51B5" }}
-                  >
+                  <Text onPress={() => navigation.navigate('LogInScreen')} style={{color: '#3F51B5'}}>
                     &ensp;Connectez-vous
                   </Text>
                 </Text>
@@ -245,28 +215,27 @@ function RegisterForm({ navigation }: RootTabScreenProps<"RegisterScreen">) {
               flex: 1,
               marginLeft: -40,
               marginRight: -40,
-              justifyContent: "flex-end",
-              alignItems: "center",
+              justifyContent: 'flex-end',
+              alignItems: 'center',
               height: 300,
-              backgroundColor: "hsla(0, 0%, 94%, 0.5)",
+              backgroundColor: 'hsla(0, 0%, 94%, 0.5)',
             }}
             animationIn="slideInUp"
             animationOut="slideOutDown"
-            backdropOpacity={0}
-          >
+            backdropOpacity={0}>
             <DateTimePicker
               testID="dateTimePicker"
               value={birthDate || new Date()}
               mode="date"
               display="spinner"
               style={{
-                width: "100%",
-                height: "20%",
-                backgroundColor: "white",
+                width: '100%',
+                height: '20%',
+                backgroundColor: 'white',
                 borderTopLeftRadius: 20,
                 borderTopRightRadius: 20,
               }}
-              onChange={(ev, selectedDate) => setBirthDate(selectedDate)}
+              onChange={(selectedDate: any) => setBirthDate(selectedDate)}
             />
           </Modal>
         )}
@@ -283,19 +252,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   errorMsg: {
-    color: "red",
+    color: 'red',
     fontSize: 11,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   buttonContainer: {
-    alignItems: "stretch",
+    alignItems: 'stretch',
   },
   button: {
-    backgroundColor: "#9141F8",
+    backgroundColor: '#9141F8',
   },
   input: {
-    backgroundColor: "white",
-    shadowColor: "#000",
+    backgroundColor: 'white',
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 1,

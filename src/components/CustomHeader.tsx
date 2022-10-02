@@ -6,13 +6,12 @@ import Logo from './Logo';
 import {Feather, Ionicons} from '@expo/vector-icons';
 import {StyleSheet} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import {Gesture, GestureDetector} from 'react-native-gesture-handler';
 
 interface CustomHeaderProps {
   title?: string;
-  setAccept?: Dispatch<SetStateAction<boolean>>;
+  setAccept: Dispatch<SetStateAction<boolean>>;
   isProfileSettingsModalOpen?: boolean;
-  setIsProfileSettingsModalOpen?: Dispatch<SetStateAction<boolean>>;
+  setIsProfileSettingsModalOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function CustomHeader(props: CustomHeaderProps) {
@@ -84,48 +83,43 @@ export default function CustomHeader(props: CustomHeaderProps) {
   });
 
   const handleProfileSettingsModal = () => {
-    console.log('modal settings open');
-    if (setIsProfileSettingsModalOpen) setIsProfileSettingsModalOpen(!isProfileSettingsModalOpen);
+    setIsProfileSettingsModalOpen(!isProfileSettingsModalOpen);
   };
 
   const handlePressFinishEdit = () => {
-    if (setAccept) setAccept(true);
+    setAccept(true);
   };
 
-  const slideDownCloseGesture = Gesture.Pan();
-
   return (
-    <GestureDetector gesture={slideDownCloseGesture}>
-      <Stack style={styles.container}>
-        {!isEditProfileTab && (
-          <>
-            <Logo />
-            <Text style={styles.Heading}>{titleToDisplay}</Text>
-            {isProfileTab && (
-              <Pressable onPress={handleProfileSettingsModal} pressEffect="none">
-                <Feather name="menu" size={23} />
-              </Pressable>
-            )}
-          </>
-        )}
-        {isEditProfileTab && (
-          <Stack style={styles.editProfilContainer}>
-            <Pressable onPress={() => navigation.navigate('ProfileTab')} pressEffect="none">
-              <Ionicons name="ios-arrow-back" size={23} />
+    <Stack style={styles.container}>
+      {!isEditProfileTab && (
+        <>
+          <Logo />
+          <Text style={styles.Heading}>{titleToDisplay}</Text>
+          {isProfileTab && (
+            <Pressable onPress={handleProfileSettingsModal} pressEffect="none">
+              <Feather name="menu" size={23} />
             </Pressable>
-            <Text style={styles.Heading}>{titleToDisplay}</Text>
-            <Button
-              title="Terminé"
-              loading={loadingUser}
-              loadingIndicatorPosition="overlay"
-              variant="text"
-              color="#9141F8"
-              uppercase={false}
-              pressEffect="none"
-              onPress={handlePressFinishEdit}></Button>
-          </Stack>
-        )}
-      </Stack>
-    </GestureDetector>
+          )}
+        </>
+      )}
+      {isEditProfileTab && (
+        <Stack style={styles.editProfilContainer}>
+          <Pressable onPress={() => navigation.navigate('ProfileTab')} pressEffect="none">
+            <Ionicons name="ios-arrow-back" size={23} />
+          </Pressable>
+          <Text style={styles.Heading}>{titleToDisplay}</Text>
+          <Button
+            title="Terminé"
+            loading={loadingUser}
+            loadingIndicatorPosition="overlay"
+            variant="text"
+            color="#9141F8"
+            uppercase={false}
+            pressEffect="none"
+            onPress={handlePressFinishEdit}></Button>
+        </Stack>
+      )}
+    </Stack>
   );
 }

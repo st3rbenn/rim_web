@@ -1,12 +1,15 @@
 import {Keyboard, ScrollView, StyleSheet, TouchableWithoutFeedback} from 'react-native';
 import React, {useEffect, useState} from 'react';
-import {Stack, Text} from '@react-native-material/core';
+import {Stack} from '@react-native-material/core';
 import {StatusBar} from 'expo-status-bar';
 import EditProfileForm from '../../components/form/EditProfileForm';
 import CustomHeader from '../../components/CustomHeader';
 
 function EditProfileScreen({navigation}: any) {
   const [accept, setAccept] = useState(false);
+  useEffect(() => {
+    console.log('accept', accept);
+  }, [accept]);
   return (
     <>
       <CustomHeader title={navigation.getState().routes[1].name} setAccept={setAccept} />

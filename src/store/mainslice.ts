@@ -1,5 +1,6 @@
-import {createSlice, createAsyncThunk, PayloadAction} from '@reduxjs/toolkit';
-import {User} from '../models/user';
+import {Axios, AxiosError} from 'axios';
+import {createSlice, createAsyncThunk, AsyncThunkPayloadCreator} from '@reduxjs/toolkit';
+import {User, UserState} from '../models/user';
 import {authService, userService, postService} from '../services/services';
 import {Post} from '../models/post';
 
@@ -18,41 +19,36 @@ export interface RootState {
 const initialState: RootState = {
   posts: [],
   isPremium: false,
-};
+} as RootState;
 
-export const register = createAsyncThunk<Pick<User, 'token'>>(
-  'auth/signup',
-  // @ts-ignore
-  async (user: User) => await authService.register(user),
-);
+export const register = createAsyncThunk('auth/signup', async (user: User) => await authService.register(user));
 
-export const authentication = createAsyncThunk('auth/login', async (user: User) => {
+export const authentication = createAsyncThunk('auth/login', async (user: Pick<RootState, 'user'>) => {
   try {
     const token = await authService.authenticate(user);
 
-    return token.token;
+    return token;
   } catch (error) {
     return error;
   }
 });
 
 export const logOut = createAsyncThunk('auth/logout', async () => await authService.logOut());
-
 // @ts-ignore
-export const reloadProfile = createAsyncThunk<User>('user/profile', async () => {
+export const reloadProfile = createAsyncThunk<User, void>('user/profile', async () => {
   try {
     const user = await userService.profile();
-    return user as User;
+
+    return user;
   } catch (error) {
     return error;
   }
 });
 
-// @ts-ignore
-export const updateProfile = createAsyncThunk<User>('user/edit', async (user: User) => {
+export const updateProfile = createAsyncThunk('user/edit', async (user: UserState) => {
   try {
     const userEdited = await userService.edit(user);
-    return userEdited as User;
+    return userEdited;
   } catch (error) {
     return error;
   }
@@ -110,6 +106,7 @@ export const mainSlice = createSlice({
         state.reloadUser = false;
       })
       .addCase(updateProfile.fulfilled, (state, action) => {
+        // @ts-ignore
         state.user = action.payload.user;
         state.loadingUser = false;
       })

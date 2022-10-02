@@ -22,15 +22,15 @@
   "plugins": ["react", "react-hooks", "@typescript-eslint", "prettier"],
   "rules": {
     "react/react-in-jsx-scope": "off",
-    "camelcase": "warn",
-    "quotes": ["error", "single"],
+    "camelcase": "off",
+    "quotes": ["warn", "single"],
     "semi": ["error", "always"],
     "no-trailing-spaces": "error",
     "no-unused-vars": "warn",
     "no-duplicate-imports": "error",
     "no-empty-function": "error",
 		"react/no-unescaped-entities": 0,
-    "@typescript-eslint/ban-ts-comment": "warn",
+    "@typescript-eslint/ban-ts-comment": "off",
     "react/no-children-prop": ["off"]
   },
   "settings": {

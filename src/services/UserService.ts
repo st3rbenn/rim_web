@@ -1,12 +1,9 @@
 import axios, {AxiosError} from 'axios';
 // @ts-ignore
-import {REACT_APP_API_URL} from '@env';
+import {API_URL} from '@env';
 import {User} from '../models/user';
 import jwt_decode from 'jwt-decode';
 import AuthMiddleware from './AuthHeader';
-import * as dotenv from 'dotenv';
-
-dotenv.config();
 
 class UserService {
   async profile(): Promise<User> {
@@ -14,9 +11,12 @@ class UserService {
       const accessToken = await AuthMiddleware();
       const decoded: User = await jwt_decode(accessToken['Authorization'] as string);
 
-      const response = await axios.get(`${process.env.API_URL}/user/${decoded.id}`, {
+      const response = await axios.get(`${API_URL}/user/${decoded.id}`, {
         method: 'GET',
-        ...accessToken,
+        headers: {
+          'Content-Type': 'application/json',
+          ...(accessToken as any),
+        },
       });
 
       return response.data;
@@ -25,7 +25,7 @@ class UserService {
     }
   }
 
-  async edit(user: User): Promise<User> {
+  async edit(user: User | FormData): Promise<User | FormData> {
     try {
       const accessToken = await AuthMiddleware();
       const decoded: User = await jwt_decode(accessToken['Authorization'] as string);
@@ -35,7 +35,7 @@ class UserService {
         ...user,
       };
 
-      const response = await axios.post(`${process.env.API_URL}/user/edit`, body, {
+      const response = await axios.post(`${API_URL}/user/edit`, body, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -53,7 +53,7 @@ class UserService {
     try {
       const accessToken = await AuthMiddleware();
 
-      const response = await axios.post(`${process.env.API_URL}/upload`, file, {
+      const response = await axios.post(`${API_URL}/upload`, file, {
         method: 'POST',
         headers: {
           'Content-Type': 'multipart/form-data',

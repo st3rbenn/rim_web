@@ -19,8 +19,7 @@ interface rootProps {
 
 function RootNavigator({routeName}: rootProps) {
   const Stack = createNativeStackNavigator<RootStackParamList>();
-  const tokenAuth = useSelector((state: any) => state.userToken);
-  const userData = useSelector((state: RootState) => state.user);
+  const tokenAuth = useSelector((state: RootState) => state.userToken);
 
   return (
     <Stack.Navigator
