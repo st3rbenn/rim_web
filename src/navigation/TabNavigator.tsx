@@ -42,7 +42,7 @@ function TabNavigator() {
             elevation: 0,
             backgroundColor: '#ffffff',
             borderRadius: 15,
-            height: '10%',
+            height: '12%',
           },
           tabBarActiveTintColor: '#9141F8',
         }

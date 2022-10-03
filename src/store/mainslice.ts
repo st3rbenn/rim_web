@@ -103,7 +103,6 @@ export const mainSlice = createSlice({
       .addCase(reloadProfile.fulfilled, (state, action) => {
         state.user = action.payload.user;
         state.posts = action.payload.posts;
-        console.log('action payload : ', action.payload);
         state.reloadUser = false;
       })
       .addCase(updateProfile.fulfilled, (state, action) => {

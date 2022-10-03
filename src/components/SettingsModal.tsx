@@ -1,20 +1,10 @@
 import {ListItem, Pressable} from '@react-native-material/core';
 import React, {useEffect, useState} from 'react';
-import {
-  Animated,
-  Modal,
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-  ScrollView,
-  StyleSheet,
-  useWindowDimensions,
-  View,
-} from 'react-native';
-import {RootState, useAppThunkDispatch} from '../store';
+import {Modal, ScrollView, StyleSheet, useWindowDimensions, View} from 'react-native';
+import {useAppThunkDispatch} from '../store';
 import {logOut} from '../store/mainslice';
 import Icon from '@expo/vector-icons/MaterialCommunityIcons';
 import {Feather} from '@expo/vector-icons';
-import {useSelector} from 'react-redux';
 
 interface SettingsModalProps {
   isModalOpen: boolean;
@@ -23,7 +13,6 @@ interface SettingsModalProps {
 
 function SettingsModal({isModalOpen, setIsModalOpen}: SettingsModalProps) {
   const dispatch = useAppThunkDispatch();
-  const userLoading = useSelector((state: RootState) => state.reloadUser);
 
   const [scrollY, setScrollY] = useState<number>(0);
 

@@ -1,16 +1,13 @@
-import {StyleSheet, ScrollView, RefreshControl, useWindowDimensions} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import {StyleSheet, ScrollView, RefreshControl} from 'react-native';
+import React, {useState} from 'react';
 import {Button, Stack, Avatar, Text, FAB} from '@react-native-material/core';
 import {RootState, useAppThunkDispatch} from '../../store';
 import {reloadProfile} from '../../store/mainslice';
 import {useSelector} from 'react-redux';
-import {MaterialIcons, Feather, MaterialCommunityIcons} from '@expo/vector-icons';
+import {MaterialIcons} from '@expo/vector-icons';
 import {PostQuery} from '../../models/post';
 import SettingsModal from '../../components/SettingsModal';
-import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import PostTab from './PostTab';
-
-const Tab = createMaterialTopTabNavigator();
+import ProfileTabNavigator from './ProfileTabNavigator';
 interface ProfileProps {
   navigation: any;
   isSettingsModalOpen: boolean;
@@ -22,16 +19,7 @@ function ProfileScreen(props: ProfileProps) {
   const user = useSelector((state: RootState) => state.user);
   const loading = useSelector((state: RootState) => state.reloadUser);
   const userPosts = useSelector((state: PostQuery) => state.posts);
-
-  const [userBirthDate, setUserBirthDate] = useState<string>('');
   const [isDropDownFavListOpen, setIsDropDownFavListOpen] = useState<boolean>(false);
-  const layout = useWindowDimensions();
-
-  const [index, setIndex] = useState(0);
-  const [routes] = useState([
-    {key: 'first', title: 'First'},
-    {key: 'second', title: 'Second'},
-  ]);
 
   const dispatch = useAppThunkDispatch();
 
@@ -40,49 +28,38 @@ function ProfileScreen(props: ProfileProps) {
   };
 
   const handleDropDownFavList = () => {
-    console.log('drop down fav list');
     setIsDropDownFavListOpen(!isDropDownFavListOpen);
   };
-
-  useEffect(() => {
-    if (user?.birthDate) {
-      const date = new Date(user?.birthDate);
-      const day = date.getDate();
-      const month = date.getMonth() + 1;
-      const year = date.getFullYear();
-      setUserBirthDate(`${day}/${month}/${year}`);
-    }
-  }, [user]);
 
   return (
     <>
       <ScrollView
-        contentContainerStyle={styles.container}
+        contentContainerStyle={[{flex: 1, flexGrow: 1}, styles.container]}
+        scrollEnabled
+        showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={loading as boolean} onRefresh={onRefresh} size={1} />}>
-        <Stack>
-          <Stack style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Stack>
-              <Avatar
-                image={{
-                  uri: user?.avatar ? user?.avatar : 'https://picsum.photos/200',
-                }}
-                size={100}
-              />
+        <Stack style={{flexDirection: 'row', alignItems: 'center'}}>
+          <Stack>
+            <Avatar
+              image={{
+                uri: user?.avatar ? user?.avatar : 'https://picsum.photos/200',
+              }}
+              size={100}
+            />
+          </Stack>
+          <Stack style={{flexDirection: 'row', marginLeft: 60}}>
+            <Stack
+              style={{
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginRight: 15,
+              }}>
+              <Text style={styles.follow}>{user?.nbFollowers}</Text>
+              <Text style={styles.nbFollow}>Abonnés</Text>
             </Stack>
-            <Stack style={{flexDirection: 'row', marginLeft: 60}}>
-              <Stack
-                style={{
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  marginRight: 15,
-                }}>
-                <Text style={styles.follow}>{user?.nbFollowers}</Text>
-                <Text style={styles.nbFollow}>Abonnés</Text>
-              </Stack>
-              <Stack style={{justifyContent: 'center', alignItems: 'center'}}>
-                <Text style={styles.follow}>{user?.nbFollowed}</Text>
-                <Text style={styles.nbFollow}>Abonnements</Text>
-              </Stack>
+            <Stack style={{justifyContent: 'center', alignItems: 'center'}}>
+              <Text style={styles.follow}>{user?.nbFollowed}</Text>
+              <Text style={styles.nbFollow}>Abonnements</Text>
             </Stack>
           </Stack>
         </Stack>
@@ -114,48 +91,11 @@ function ProfileScreen(props: ProfileProps) {
             variant="contained"
             onPress={handleDropDownFavList}></Button>
         </Stack>
-        <Stack mt={15}></Stack>
-        {/* <Stack>
-        {userPosts && userPosts?.length > 0 ? (
-          userPosts?.map((post: Post) => <PostComponents key={post.id} post={post} />)
-        ) : (
-          <Text style={{textAlign: 'center', fontSize: 20, fontWeight: 'bold'}}>Aucun post</Text>
-        )}
-      </Stack> */}
-        {isSettingsModalOpen && (
-          <SettingsModal isModalOpen={isSettingsModalOpen} setIsModalOpen={setIsSettingsModalOpen} />
-        )}
-        <Stack
-          style={{
-            minHeight: '100%',
-          }}>
-          <Tab.Navigator
-            screenOptions={{
-              tabBarIndicatorStyle: {
-                backgroundColor: 'black',
-              },
-            }}>
-            <Tab.Screen
-              name="Posts"
-              children={() => <PostTab posts={userPosts} />}
-              options={{
-                tabBarLabel: ({color}) => <Feather name="grid" size={17} color={color} />,
-                tabBarStyle: {backgroundColor: 'hsla(0, 0%, 100%, 0)'},
-              }}
-            />
-            <Tab.Screen
-              name="test"
-              component={PostTab}
-              options={{
-                tabBarLabel: ({color}) => (
-                  <MaterialCommunityIcons name="message-question-outline" size={17} color={color} />
-                ),
-                tabBarStyle: {backgroundColor: 'hsla(0, 0%, 100%, 0)'},
-              }}
-            />
-          </Tab.Navigator>
-        </Stack>
+        <ProfileTabNavigator posts={userPosts} />
       </ScrollView>
+      {isSettingsModalOpen && (
+        <SettingsModal isModalOpen={isSettingsModalOpen} setIsModalOpen={setIsSettingsModalOpen} />
+      )}
     </>
   );
 }

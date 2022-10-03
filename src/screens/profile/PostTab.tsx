@@ -1,7 +1,5 @@
-import {View, Text} from 'react-native';
-import React, {useEffect} from 'react';
+import {Stack} from '@react-native-material/core';
 import {Post} from 'src/models/post';
-import {Stack, VStack} from '@react-native-material/core';
 import PostComponents from '../../components/Post';
 
 interface PostTabProps {
@@ -12,14 +10,15 @@ function PostTab(props: PostTabProps) {
   const {posts} = props;
 
   return (
-    <VStack
+    <Stack
       style={{
-        minHeight: '100%',
+        flex: 1,
+        flexGrow: 1,
       }}>
       {posts?.map((post) => (
         <PostComponents key={post.id} post={post} />
       ))}
-    </VStack>
+    </Stack>
   );
 }
 

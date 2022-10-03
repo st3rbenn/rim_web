@@ -62,7 +62,7 @@ function PostComponents(props: PostProps) {
       <Stack style={styles.messageContainer}>
         <Text
           style={{
-            fontSize: 12,
+            fontSize: 14,
             color: 'black',
           }}>
           {post.content}
@@ -77,11 +77,8 @@ export default PostComponents;
 const styles = StyleSheet.create({
   postContainer: {
     padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
     backgroundColor: 'white',
     borderRadius: 10,
-    flexDirection: 'column',
     marginTop: 15,
   },
   userInfoContainer: {

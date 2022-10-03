@@ -21,7 +21,7 @@ class UserService {
 
       return response.data;
     } catch (error) {
-      return error as AxiosError;
+      return error as any;
     }
   }
 
@@ -45,7 +45,7 @@ class UserService {
 
       return response.data;
     } catch (error) {
-      return error as AxiosError;
+      return error as any;
     }
   }
 
