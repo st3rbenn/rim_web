@@ -1,5 +1,5 @@
 import {StyleSheet, Text, TextInput as NativeInput, Platform} from 'react-native';
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Formik} from 'formik';
 import {Avatar, Pressable, Stack} from '@react-native-material/core';
 import {object, string} from 'yup';
@@ -17,10 +17,10 @@ interface Props {
 
 function EditProfileForm({navigation, handleAccept}: Props) {
   const currentUser = useSelector((state: User) => state.user);
-  const [avatar, setAvatar] = React.useState<string>(currentUser?.avatar);
-  const [name, setName] = React.useState<string | undefined>(currentUser?.name);
-  const [pseudo, setPseudo] = React.useState<string | undefined>(currentUser?.pseudo);
-  const [biography, setBiography] = React.useState<string | undefined>(currentUser?.biography);
+  const [avatar, setAvatar] = useState<string>(currentUser?.avatar);
+  const [name, setName] = useState<string | undefined>(currentUser?.name);
+  const [pseudo, setPseudo] = useState<string | undefined>(currentUser?.pseudo);
+  const [biography, setBiography] = useState<string | undefined>(currentUser?.biography);
 
   const [selectedImage, setSelectedImage] = React.useState<ImagePicker.ImagePickerResult>();
 
@@ -106,6 +106,19 @@ function EditProfileForm({navigation, handleAccept}: Props) {
     }
   }, [handleAccept]);
 
+  useEffect(() => {
+    const regex = new RegExp('^[a-zA-Z0-9_]*$');
+    if (pseudo && !regex.test(pseudo)) {
+      setPseudo(pseudo.replace(/[^a-zA-Z0-9_]/g, ''));
+    }
+  }, [pseudo]);
+
+  useEffect(() => {
+    if (name && name.length > 20) {
+      setName(name.substring(0, 20));
+    }
+  }, [name]);
+
   const editProfileSchema = object({
     avatar: string(),
     pseudo: string()
@@ -115,10 +128,10 @@ function EditProfileForm({navigation, handleAccept}: Props) {
     name: string()
       .required()
       .min(2, 'Le prénom doit contenir au moins 2 caractères')
-      .max(20, 'Le prénom doit contenir au plus 50 caractères'),
+      .max(20, 'Le prénom doit contenir au plus 20 caractères'),
     biography: string()
       .min(10, 'La biographie doit contenir au moins 10 caractères')
-      .max(80, 'La biographie doit contenir au plus 200 caractères'),
+      .max(80, 'La biographie doit contenir au plus 80 caractères'),
   });
 
   return (

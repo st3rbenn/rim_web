@@ -22,7 +22,7 @@ function TabNavigator() {
       initialRouteName="Home"
       screenOptions={
         tokenAuth && {
-          header: ({navigation}) => (
+          header: () => (
             <CustomHeader
               title={currentRoute}
               isProfileSettingsModalOpen={isSettingsModalOpen}
@@ -39,9 +39,6 @@ function TabNavigator() {
           tabBarShowLabel: false,
           tabBarStyle: {
             position: 'absolute',
-            bottom: 25,
-            left: 20,
-            right: 20,
             elevation: 0,
             backgroundColor: '#ffffff',
             borderRadius: 15,
@@ -67,8 +64,8 @@ function TabNavigator() {
             );
           },
         }}
-        listeners={({navigation, route}) => ({
-          tabPress: (e) => {
+        listeners={({route}) => ({
+          tabPress: () => {
             setCurrentRoute(route.name);
           },
         })}
@@ -90,8 +87,8 @@ function TabNavigator() {
             );
           },
         }}
-        listeners={({navigation, route}) => ({
-          tabPress: (e) => {
+        listeners={({route}) => ({
+          tabPress: () => {
             setCurrentRoute(route.name);
           },
         })}
@@ -113,8 +110,8 @@ function TabNavigator() {
             );
           },
         }}
-        listeners={({navigation, route}) => ({
-          tabPress: (e) => {
+        listeners={({route}) => ({
+          tabPress: () => {
             setCurrentRoute(route.name);
           },
         })}
@@ -142,8 +139,8 @@ function TabNavigator() {
             );
           },
         }}
-        listeners={({navigation, route}) => ({
-          focus: (e) => {
+        listeners={() => ({
+          focus: () => {
             setCurrentRoute(userData?.name);
           },
         })}

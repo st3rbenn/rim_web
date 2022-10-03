@@ -2,13 +2,13 @@ import {User} from './user';
 
 export interface Post extends PostQuery {
   id: string;
-  message: string;
-  createdAt: Date;
+  content: string;
+  createdAt: string;
   updatedAt: Date;
   user: User;
 }
 
-interface PostQuery {
+export interface PostQuery {
   message?: string;
   posts?: Post[];
 }

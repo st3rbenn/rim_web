@@ -1,5 +1,4 @@
-import {Axios, AxiosError} from 'axios';
-import {createSlice, createAsyncThunk, AsyncThunkPayloadCreator} from '@reduxjs/toolkit';
+import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
 import {User, UserState} from '../models/user';
 import {authService, userService, postService} from '../services/services';
 import {Post} from '../models/post';
@@ -23,7 +22,7 @@ const initialState: RootState = {
 
 export const register = createAsyncThunk('auth/signup', async (user: User) => await authService.register(user));
 
-export const authentication = createAsyncThunk('auth/login', async (user: Pick<RootState, 'user'>) => {
+export const authentication = createAsyncThunk('auth/login', async (user: User) => {
   try {
     const token = await authService.authenticate(user);
 
@@ -66,7 +65,7 @@ export const uploadFile = createAsyncThunk('upload', async (file: FormData) => {
 export const init = createAsyncThunk<Pick<RootState, 'posts' | 'user'>>('user/init', async () => {
   const [userPosts, user] = await Promise.all([postService.getUserPosts(), userService.profile()]);
 
-  return {posts: userPosts, user: user.user};
+  return {posts: userPosts.posts, user: user.user};
 });
 
 export const mainSlice = createSlice({
@@ -103,6 +102,8 @@ export const mainSlice = createSlice({
       })
       .addCase(reloadProfile.fulfilled, (state, action) => {
         state.user = action.payload.user;
+        state.posts = action.payload.posts;
+        console.log('action payload : ', action.payload);
         state.reloadUser = false;
       })
       .addCase(updateProfile.fulfilled, (state, action) => {
@@ -115,7 +116,6 @@ export const mainSlice = createSlice({
       })
       .addCase(init.fulfilled, (state, action) => {
         state.user = action.payload.user;
-        state.posts = action.payload.posts;
         state.loadingUserPosts = false;
       })
       .addCase(uploadFile.fulfilled, (state, action) => {

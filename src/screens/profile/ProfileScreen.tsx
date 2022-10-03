@@ -1,13 +1,16 @@
-import {StyleSheet, ScrollView, RefreshControl, Animated, useWindowDimensions} from 'react-native';
+import {StyleSheet, ScrollView, RefreshControl, useWindowDimensions} from 'react-native';
 import React, {useEffect, useState} from 'react';
-import {Button, Stack, Avatar, Text, FAB, Pressable} from '@react-native-material/core';
+import {Button, Stack, Avatar, Text, FAB} from '@react-native-material/core';
 import {RootState, useAppThunkDispatch} from '../../store';
 import {reloadProfile} from '../../store/mainslice';
 import {useSelector} from 'react-redux';
-import {MaterialIcons} from '@expo/vector-icons';
-import {Post} from '../../models/post';
+import {MaterialIcons, Feather, MaterialCommunityIcons} from '@expo/vector-icons';
+import {PostQuery} from '../../models/post';
 import SettingsModal from '../../components/SettingsModal';
+import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
+import PostTab from './PostTab';
 
+const Tab = createMaterialTopTabNavigator();
 interface ProfileProps {
   navigation: any;
   isSettingsModalOpen: boolean;
@@ -18,10 +21,18 @@ function ProfileScreen(props: ProfileProps) {
   const {navigation, isSettingsModalOpen, setIsSettingsModalOpen} = props;
   const user = useSelector((state: RootState) => state.user);
   const loading = useSelector((state: RootState) => state.reloadUser);
-  const userPosts = useSelector((state: Post) => state.posts);
+  const userPosts = useSelector((state: PostQuery) => state.posts);
 
   const [userBirthDate, setUserBirthDate] = useState<string>('');
   const [isDropDownFavListOpen, setIsDropDownFavListOpen] = useState<boolean>(false);
+  const layout = useWindowDimensions();
+
+  const [index, setIndex] = useState(0);
+  const [routes] = useState([
+    {key: 'first', title: 'First'},
+    {key: 'second', title: 'Second'},
+  ]);
+
   const dispatch = useAppThunkDispatch();
 
   const onRefresh = async () => {
@@ -44,68 +55,108 @@ function ProfileScreen(props: ProfileProps) {
   }, [user]);
 
   return (
-    <ScrollView
-      contentContainerStyle={styles.container}
-      refreshControl={<RefreshControl refreshing={loading as boolean} onRefresh={onRefresh} size={1} />}>
-      <Stack>
-        <Stack style={{flexDirection: 'row', alignItems: 'center'}}>
-          <Stack>
-            <Avatar
-              image={{
-                uri: user?.avatar ? user?.avatar : 'https://picsum.photos/200',
-              }}
-              size={100}
-            />
-          </Stack>
-          <Stack style={{flexDirection: 'row', marginLeft: 60}}>
-            <Stack
-              style={{
-                justifyContent: 'center',
-                alignItems: 'center',
-                marginRight: 15,
-              }}>
-              <Text style={styles.follow}>{user?.nbFollowers}</Text>
-              <Text style={styles.nbFollow}>Abonnés</Text>
+    <>
+      <ScrollView
+        contentContainerStyle={styles.container}
+        refreshControl={<RefreshControl refreshing={loading as boolean} onRefresh={onRefresh} size={1} />}>
+        <Stack>
+          <Stack style={{flexDirection: 'row', alignItems: 'center'}}>
+            <Stack>
+              <Avatar
+                image={{
+                  uri: user?.avatar ? user?.avatar : 'https://picsum.photos/200',
+                }}
+                size={100}
+              />
             </Stack>
-            <Stack style={{justifyContent: 'center', alignItems: 'center'}}>
-              <Text style={styles.follow}>{user?.nbFollowed}</Text>
-              <Text style={styles.nbFollow}>Abonnements</Text>
+            <Stack style={{flexDirection: 'row', marginLeft: 60}}>
+              <Stack
+                style={{
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginRight: 15,
+                }}>
+                <Text style={styles.follow}>{user?.nbFollowers}</Text>
+                <Text style={styles.nbFollow}>Abonnés</Text>
+              </Stack>
+              <Stack style={{justifyContent: 'center', alignItems: 'center'}}>
+                <Text style={styles.follow}>{user?.nbFollowed}</Text>
+                <Text style={styles.nbFollow}>Abonnements</Text>
+              </Stack>
             </Stack>
           </Stack>
         </Stack>
-      </Stack>
-      <Stack style={styles.infoContainer}>
-        <Text style={styles.pseudo}>@{user?.pseudo}</Text>
-        {user?.biography && <Text style={styles.biography}>{user?.biography}</Text>}
-      </Stack>
-      <Stack style={styles.btnContainer}>
-        <FAB
-          style={styles.btnEdit}
-          labelContainerStyle={{width: '100%', alignItems: 'center', marginTop: 2}}
-          label={() => <Text style={{fontSize: 12, fontWeight: 'bold'}}>Modifier mon profil</Text>}
-          size="mini"
-          variant="extended"
-          color="white"
-          pressEffect="none"
-          onPress={() => navigation.navigate('EditProfile')}></FAB>
-        <Button
-          style={styles.btnShowMore}
-          title={() =>
-            !isDropDownFavListOpen ? (
-              <MaterialIcons name="arrow-drop-down" size={20} />
-            ) : (
-              <MaterialIcons name="arrow-drop-up" size={20} />
-            )
-          }
-          color="white"
-          pressEffect="none"
-          variant="contained"
-          onPress={handleDropDownFavList}></Button>
-      </Stack>
-      {isSettingsModalOpen && (
-        <SettingsModal isModalOpen={isSettingsModalOpen} setIsModalOpen={setIsSettingsModalOpen} />
-      )}
-    </ScrollView>
+        <Stack style={styles.infoContainer}>
+          <Text style={styles.pseudo}>@{user?.pseudo}</Text>
+          {user?.biography && <Text style={styles.biography}>{user?.biography}</Text>}
+        </Stack>
+        <Stack style={styles.btnContainer}>
+          <FAB
+            style={styles.btnEdit}
+            labelContainerStyle={{width: '100%', alignItems: 'center', marginTop: 2}}
+            label={() => <Text style={{fontSize: 12, fontWeight: 'bold'}}>Modifier mon profil</Text>}
+            size="mini"
+            variant="extended"
+            color="white"
+            pressEffect="none"
+            onPress={() => navigation.navigate('EditProfile')}></FAB>
+          <Button
+            style={styles.btnShowMore}
+            title={() =>
+              !isDropDownFavListOpen ? (
+                <MaterialIcons name="arrow-drop-down" size={20} />
+              ) : (
+                <MaterialIcons name="arrow-drop-up" size={20} />
+              )
+            }
+            color="white"
+            pressEffect="none"
+            variant="contained"
+            onPress={handleDropDownFavList}></Button>
+        </Stack>
+        <Stack mt={15}></Stack>
+        {/* <Stack>
+        {userPosts && userPosts?.length > 0 ? (
+          userPosts?.map((post: Post) => <PostComponents key={post.id} post={post} />)
+        ) : (
+          <Text style={{textAlign: 'center', fontSize: 20, fontWeight: 'bold'}}>Aucun post</Text>
+        )}
+      </Stack> */}
+        {isSettingsModalOpen && (
+          <SettingsModal isModalOpen={isSettingsModalOpen} setIsModalOpen={setIsSettingsModalOpen} />
+        )}
+        <Stack
+          style={{
+            minHeight: '100%',
+          }}>
+          <Tab.Navigator
+            screenOptions={{
+              tabBarIndicatorStyle: {
+                backgroundColor: 'black',
+              },
+            }}>
+            <Tab.Screen
+              name="Posts"
+              children={() => <PostTab posts={userPosts} />}
+              options={{
+                tabBarLabel: ({color}) => <Feather name="grid" size={17} color={color} />,
+                tabBarStyle: {backgroundColor: 'hsla(0, 0%, 100%, 0)'},
+              }}
+            />
+            <Tab.Screen
+              name="test"
+              component={PostTab}
+              options={{
+                tabBarLabel: ({color}) => (
+                  <MaterialCommunityIcons name="message-question-outline" size={17} color={color} />
+                ),
+                tabBarStyle: {backgroundColor: 'hsla(0, 0%, 100%, 0)'},
+              }}
+            />
+          </Tab.Navigator>
+        </Stack>
+      </ScrollView>
+    </>
   );
 }
 

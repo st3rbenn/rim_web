@@ -1,3 +1,5 @@
+import {Post} from './post';
+
 export interface User extends UserQuery {
   token?: string;
   id?: string;
@@ -6,11 +8,12 @@ export interface User extends UserQuery {
   name?: string;
   password?: string;
   biography?: string;
-  avatar?: any;
+  avatar?: string;
   birthDate?: Date;
   nbFollowers?: number;
   nbFollowed?: number;
   exp?: number;
+  posts: Post[];
 }
 
 interface UserQuery {
