@@ -1,4 +1,5 @@
 import {Stack} from '@react-native-material/core';
+import {ScrollView, View} from 'react-native';
 import {Post} from 'src/models/post';
 import PostComponents from '../../components/Post';
 
@@ -10,15 +11,11 @@ function PostTab(props: PostTabProps) {
   const {posts} = props;
 
   return (
-    <Stack
-      style={{
-        flex: 1,
-        flexGrow: 1,
-      }}>
+    <>
       {posts?.map((post) => (
         <PostComponents key={post.id} post={post} />
       ))}
-    </Stack>
+    </>
   );
 }
 

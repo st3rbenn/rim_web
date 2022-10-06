@@ -1,46 +1,200 @@
-import React from 'react';
-import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import {Post} from 'src/models/post';
 import {Feather, MaterialCommunityIcons} from '@expo/vector-icons';
-import PostTab from './PostTab';
-
-const Tab = createMaterialTopTabNavigator();
+import {Box, FAB, Stack, VStack} from '@react-native-material/core';
+import React, {useEffect, useRef, useState} from 'react';
+import {StyleSheet, Animated} from 'react-native';
+import {Post} from '../../models/post';
+import PostComponents from '../../components/Post';
 
 interface ProfileTabNavigatorProps {
   posts?: Post[];
 }
 
 const ProfileTabNavigator = (props: ProfileTabNavigatorProps) => {
+  const [currentTabSelected, setCurrentTabSelected] = useState<string>('postsTab');
+  const slideRightEffect = useRef(new Animated.Value(0)).current;
   const {posts} = props;
+
+  useEffect(() => {
+    if (currentTabSelected === 'postsTab') {
+      Animated.timing(slideRightEffect, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+    }
+    if (currentTabSelected === 'questionTab') {
+      Animated.timing(slideRightEffect, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [currentTabSelected]);
+
+  const handleTabChange = (tab: string) => {
+    setCurrentTabSelected(tab);
+  };
+
+  const setTimingBeforeHide = (tab: string) => {
+    setTimeout(() => {
+      handleTabChange(tab);
+    }, 200);
+  };
+
   return (
     <>
-      <Tab.Navigator
-        screenOptions={{
-          tabBarIndicatorStyle: {
-            backgroundColor: 'black',
-          },
-        }}>
-        <Tab.Screen
-          name="Posts"
-          children={() => <PostTab posts={posts} />}
-          options={{
-            tabBarLabel: ({color}) => <Feather name="grid" size={17} color={color} />,
-            tabBarStyle: {backgroundColor: 'hsla(0, 0%, 100%, 0)'},
+      <Stack style={styles.switchNavContainer}>
+        <Animated.View
+          style={{
+            position: 'absolute',
+            width: '50%',
+            height: 2,
+            backgroundColor: '#000',
+            bottom: 0,
+            left: 0,
+            transform: [
+              {
+                translateX: slideRightEffect.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0, 200],
+                }),
+              },
+            ],
           }}
         />
-        <Tab.Screen
-          name="test"
-          component={PostTab}
-          options={{
-            tabBarLabel: ({color}) => (
-              <MaterialCommunityIcons name="message-question-outline" size={17} color={color} />
-            ),
-            tabBarStyle: {backgroundColor: 'hsla(0, 0%, 100%, 0)'},
-          }}
-        />
-      </Tab.Navigator>
+        <FAB
+          icon={({color}) => <Feather name="grid" size={17} color={color} />}
+          iconContainerStyle={styles.switchNavBtn}
+          style={styles.btn}
+          pressEffect="none"
+          onPress={() => handleTabChange('postsTab')}></FAB>
+        <FAB
+          icon={({color}) => <MaterialCommunityIcons name="message-question-outline" size={17} color={color} />}
+          iconContainerStyle={styles.switchNavBtn}
+          style={styles.btn}
+          pressEffect="none"
+          onPress={() => handleTabChange('questionTab')}></FAB>
+      </Stack>
+      {currentTabSelected === 'postsTab' && (
+        <VStack
+          style={{
+            marginBottom: posts && posts?.length > 4 ? 150 : 0,
+          }}>
+          <Animated.View
+            style={{
+              transform: [
+                {
+                  translateX: slideRightEffect.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, -400],
+                  }),
+                },
+              ],
+              display: currentTabSelected === 'postsTab' ? 'flex' : 'none',
+            }}>
+            <Box
+              style={{
+                marginTop: 20,
+              }}>
+              {posts?.map((post) => (
+                <PostComponents key={post.id} post={post} />
+              ))}
+            </Box>
+          </Animated.View>
+        </VStack>
+      )}
+      {currentTabSelected === 'questionTab' && (
+        <VStack
+          style={{
+            marginBottom: posts && posts?.length > 4 ? 150 : 0,
+          }}>
+          <Animated.View
+            style={[
+              {
+                transform: [
+                  {
+                    translateX: slideRightEffect.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [400, 0],
+                    }),
+                  },
+                ],
+              },
+            ]}>
+            <Box
+              style={{
+                marginTop: 20,
+              }}>
+              {posts?.map((post) => (
+                <PostComponents key={post.id} post={post} />
+              ))}
+            </Box>
+          </Animated.View>
+        </VStack>
+      )}
     </>
   );
 };
+
+const styles = StyleSheet.create({
+  switchNavContainer: {
+    backgroundColor: 'transparent',
+    justifyContent: 'space-around',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  currentSelectedTab: {
+    borderBottomWidth: 2,
+  },
+  switchNavBtn: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  btn: {
+    backgroundColor: 'transparent',
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowRadius: 0,
+    shadowOpacity: 0,
+  },
+  postContainer: {
+    padding: 10,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    marginTop: 15,
+  },
+  userInfoContainer: {
+    flexDirection: 'row',
+    marginBottom: 10,
+  },
+  messageContainer: {
+    marginTop: 10,
+  },
+  userInfo: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    marginLeft: 10,
+  },
+  userName: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    marginRight: 5,
+  },
+  pseudoPost: {
+    fontSize: 12,
+    color: '#ccc',
+  },
+  postedAt: {
+    fontSize: 12,
+    color: '#ccc',
+  },
+  usernamePostedAt: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+});
 
 export default ProfileTabNavigator;

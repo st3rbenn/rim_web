@@ -5,9 +5,11 @@ import SearchScreen from '../screens/SearchScreen';
 import {Feather, Ionicons} from '@expo/vector-icons';
 import NotificationScreen from '../screens/NotificationScreen';
 import {useSelector} from 'react-redux';
-import {RootState} from '../store';
-import {useEffect, useState} from 'react';
+import {RootState, useAppThunkDispatch} from '../store';
+import {useState} from 'react';
 import CustomHeader from '../components/CustomHeader';
+import {RefreshControl, ScrollView} from 'react-native';
+import {reloadProfile} from '../store/mainslice';
 
 const Tab = createBottomTabNavigator();
 
@@ -16,6 +18,13 @@ function TabNavigator() {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState<boolean>(false);
   const userData = useSelector((state: RootState) => state.user);
   const tokenAuth = useSelector((state: any) => state.userToken);
+  const userLoading = useSelector((state: any) => state.userLoading);
+
+  const dispatch = useAppThunkDispatch();
+
+  const onRefresh = async () => {
+    await dispatch(reloadProfile());
+  };
 
   return (
     <Tab.Navigator

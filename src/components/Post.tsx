@@ -1,7 +1,7 @@
 import {StyleSheet, Text} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {Post} from 'src/models/post';
-import {Avatar, Stack} from '@react-native-material/core';
+import {Avatar, Box, Stack} from '@react-native-material/core';
 import {useSelector} from 'react-redux';
 import {RootState} from 'src/store';
 
@@ -12,38 +12,35 @@ interface PostProps {
 function PostComponents(props: PostProps) {
   const user = useSelector((state: RootState) => state.user);
   const [createdAt, setCreatedAt] = useState<string>('');
-  const {post} = props;
 
   useEffect(() => {
     const actualDate = new Date();
     const postDate = new Date(post.createdAt);
-    const actualHour = actualDate.getHours();
-    const actualMinute = actualDate.getMinutes();
-    const actualDay = actualDate.getDate();
-    const actualMonth = actualDate.getMonth() + 1;
-    const postHour = postDate.getHours();
-    const postMinute = postDate.getMinutes();
-    const postDay = postDate.getDate();
-    const postMonth = postDate.getMonth() + 1;
-    const diffHour = actualHour - postHour;
-    const diffMinute = actualMinute - postMinute;
-    const diffDay = actualDay - postDay;
-    const diffMonth = actualMonth - postMonth;
-    if (diffHour > 0) {
-      setCreatedAt(`${diffHour}h`);
-    } else if (diffMinute > 0) {
-      setCreatedAt(`${diffMinute}m`);
-    } else if (diffDay > 0) {
-      setCreatedAt(`${diffDay}d`);
+    const diff = actualDate.getTime() - postDate.getTime();
+    const diffYears = Math.floor(diff / (1000 * 60 * 60 * 24 * 365));
+    const diffMonth = Math.floor(diff / (1000 * 3600 * 24 * 30));
+    const diffDays = Math.floor(diff / (1000 * 3600 * 24));
+    const diffHours = Math.floor(diff / (1000 * 3600));
+    const diffMinutes = Math.floor(diff / (1000 * 60));
+    const diffSeconds = Math.floor(diff / 1000);
+    if (diffYears > 0) {
+      setCreatedAt(`${diffYears}Y`);
     } else if (diffMonth > 0) {
       setCreatedAt(`${diffMonth}m`);
-    } else {
-      setCreatedAt('maintenant');
+    } else if (diffDays > 0) {
+      setCreatedAt(`${diffDays}d`);
+    } else if (diffHours > 0) {
+      setCreatedAt(`${diffHours}h`);
+    } else if (diffMinutes > 0) {
+      setCreatedAt(`${diffMinutes}min`);
+    } else if (diffSeconds > 0) {
+      setCreatedAt(`${diffSeconds}sec`);
     }
-  }, [post]);
+  });
+  const {post} = props;
 
   return (
-    <Stack style={styles.postContainer}>
+    <Box style={styles.postContainer}>
       <Stack style={styles.userInfoContainer}>
         <Avatar
           size={40}
@@ -68,7 +65,7 @@ function PostComponents(props: PostProps) {
           {post.content}
         </Text>
       </Stack>
-    </Stack>
+    </Box>
   );
 }
 

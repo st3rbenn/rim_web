@@ -17,9 +17,9 @@ interface ProfileProps {
 function ProfileScreen(props: ProfileProps) {
   const {navigation, isSettingsModalOpen, setIsSettingsModalOpen} = props;
   const user = useSelector((state: RootState) => state.user);
-  const loading = useSelector((state: RootState) => state.reloadUser);
   const userPosts = useSelector((state: PostQuery) => state.posts);
   const [isDropDownFavListOpen, setIsDropDownFavListOpen] = useState<boolean>(false);
+  const userLoading = useSelector((state: any) => state.userLoading);
 
   const dispatch = useAppThunkDispatch();
 
@@ -32,71 +32,69 @@ function ProfileScreen(props: ProfileProps) {
   };
 
   return (
-    <>
-      <ScrollView
-        contentContainerStyle={[{flex: 1, flexGrow: 1}, styles.container]}
-        scrollEnabled
-        showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={loading as boolean} onRefresh={onRefresh} size={1} />}>
-        <Stack style={{flexDirection: 'row', alignItems: 'center'}}>
-          <Stack>
-            <Avatar
-              image={{
-                uri: user?.avatar ? user?.avatar : 'https://picsum.photos/200',
-              }}
-              size={100}
-            />
+    <ScrollView
+      scrollEnabled={true}
+      showsVerticalScrollIndicator={false}
+      refreshControl={<RefreshControl refreshing={userLoading} onRefresh={onRefresh} />}
+      contentContainerStyle={styles.container}>
+      <Stack style={{flexDirection: 'row', alignItems: 'center'}}>
+        <Stack>
+          <Avatar
+            image={{
+              uri: user?.avatar ? user?.avatar : 'https://picsum.photos/200',
+            }}
+            size={100}
+          />
+        </Stack>
+        <Stack style={{flexDirection: 'row', marginLeft: 60}}>
+          <Stack
+            style={{
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginRight: 15,
+            }}>
+            <Text style={styles.follow}>{user?.nbFollowers}</Text>
+            <Text style={styles.nbFollow}>Abonnés</Text>
           </Stack>
-          <Stack style={{flexDirection: 'row', marginLeft: 60}}>
-            <Stack
-              style={{
-                justifyContent: 'center',
-                alignItems: 'center',
-                marginRight: 15,
-              }}>
-              <Text style={styles.follow}>{user?.nbFollowers}</Text>
-              <Text style={styles.nbFollow}>Abonnés</Text>
-            </Stack>
-            <Stack style={{justifyContent: 'center', alignItems: 'center'}}>
-              <Text style={styles.follow}>{user?.nbFollowed}</Text>
-              <Text style={styles.nbFollow}>Abonnements</Text>
-            </Stack>
+          <Stack style={{justifyContent: 'center', alignItems: 'center'}}>
+            <Text style={styles.follow}>{user?.nbFollowed}</Text>
+            <Text style={styles.nbFollow}>Abonnements</Text>
           </Stack>
         </Stack>
-        <Stack style={styles.infoContainer}>
-          <Text style={styles.pseudo}>@{user?.pseudo}</Text>
-          {user?.biography && <Text style={styles.biography}>{user?.biography}</Text>}
-        </Stack>
-        <Stack style={styles.btnContainer}>
-          <FAB
-            style={styles.btnEdit}
-            labelContainerStyle={{width: '100%', alignItems: 'center', marginTop: 2}}
-            label={() => <Text style={{fontSize: 12, fontWeight: 'bold'}}>Modifier mon profil</Text>}
-            size="mini"
-            variant="extended"
-            color="white"
-            pressEffect="none"
-            onPress={() => navigation.navigate('EditProfile')}></FAB>
-          <Button
-            style={styles.btnShowMore}
-            title={() =>
-              !isDropDownFavListOpen ? (
-                <MaterialIcons name="arrow-drop-down" size={20} />
-              ) : (
-                <MaterialIcons name="arrow-drop-up" size={20} />
-              )
-            }
-            color="white"
-            pressEffect="none"
-            variant="contained"
-            onPress={handleDropDownFavList}></Button>
-        </Stack>
-        <ProfileTabNavigator posts={userPosts} />
-      </ScrollView>
+      </Stack>
+      <Stack style={styles.infoContainer}>
+        <Text style={styles.pseudo}>@{user?.pseudo}</Text>
+        {user?.biography && <Text style={styles.biography}>{user?.biography}</Text>}
+      </Stack>
+      <Stack style={styles.btnContainer}>
+        <FAB
+          style={styles.btnEdit}
+          labelContainerStyle={{width: '100%', alignItems: 'center', marginTop: 2}}
+          label={() => <Text style={{fontSize: 12, fontWeight: 'bold'}}>Modifier mon profil</Text>}
+          size="mini"
+          variant="extended"
+          color="white"
+          pressEffect="none"
+          onPress={() => navigation.navigate('EditProfile')}></FAB>
+        <Button
+          style={styles.btnShowMore}
+          title={() =>
+            !isDropDownFavListOpen ? (
+              <MaterialIcons name="arrow-drop-down" size={20} />
+            ) : (
+              <MaterialIcons name="arrow-drop-up" size={20} />
+            )
+          }
+          color="white"
+          pressEffect="none"
+          variant="contained"
+          onPress={handleDropDownFavList}></Button>
+      </Stack>
       {isSettingsModalOpen && (
         <SettingsModal isModalOpen={isSettingsModalOpen} setIsModalOpen={setIsSettingsModalOpen} />
       )}
-    </>
+      <ProfileTabNavigator posts={userPosts} />
+    </ScrollView>
   );
 }
 
@@ -104,8 +102,8 @@ const styles = StyleSheet.create({
   container: {
     marginLeft: 16,
     marginRight: 16,
-    marginBottom: 100,
     marginTop: 20,
+    flexGrow: 1,
   },
   infoContainer: {
     marginLeft: 5,
