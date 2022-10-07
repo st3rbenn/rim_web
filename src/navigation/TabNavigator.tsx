@@ -18,13 +18,6 @@ function TabNavigator() {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState<boolean>(false);
   const userData = useSelector((state: RootState) => state.user);
   const tokenAuth = useSelector((state: any) => state.userToken);
-  const userLoading = useSelector((state: any) => state.userLoading);
-
-  const dispatch = useAppThunkDispatch();
-
-  const onRefresh = async () => {
-    await dispatch(reloadProfile());
-  };
 
   return (
     <Tab.Navigator
@@ -50,8 +43,8 @@ function TabNavigator() {
             position: 'absolute',
             elevation: 0,
             backgroundColor: '#ffffff',
-            borderRadius: 15,
-            height: '12%',
+            height: '10%',
+            borderTopWidth: 0,
           },
           tabBarActiveTintColor: '#9141F8',
         }
@@ -61,16 +54,7 @@ function TabNavigator() {
         component={HomeScreen}
         options={{
           tabBarIcon: ({color, size}) => {
-            return (
-              <Ionicons
-                name="home-outline"
-                size={size}
-                color={color}
-                style={{
-                  marginTop: 25,
-                }}
-              />
-            );
+            return <Ionicons name="home-outline" size={size} color={color} />;
           },
         }}
         listeners={({route}) => ({
@@ -84,16 +68,7 @@ function TabNavigator() {
         component={SearchScreen}
         options={{
           tabBarIcon: ({color, size}) => {
-            return (
-              <Ionicons
-                name="search"
-                size={size}
-                color={color}
-                style={{
-                  marginTop: 25,
-                }}
-              />
-            );
+            return <Ionicons name="search" size={size} color={color} />;
           },
         }}
         listeners={({route}) => ({
@@ -107,16 +82,7 @@ function TabNavigator() {
         component={NotificationScreen}
         options={{
           tabBarIcon: ({color, size}) => {
-            return (
-              <Ionicons
-                name="notifications-outline"
-                size={size}
-                color={color}
-                style={{
-                  marginTop: 25,
-                }}
-              />
-            );
+            return <Ionicons name="notifications-outline" size={size} color={color} />;
           },
         }}
         listeners={({route}) => ({
@@ -136,16 +102,7 @@ function TabNavigator() {
         )}
         options={{
           tabBarIcon: ({color, size}) => {
-            return (
-              <Feather
-                name="user"
-                size={size}
-                color={color}
-                style={{
-                  marginTop: 25,
-                }}
-              />
-            );
+            return <Feather name="user" size={size} color={color} />;
           },
         }}
         listeners={() => ({
