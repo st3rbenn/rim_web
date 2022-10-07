@@ -114,7 +114,7 @@ function ProfileTabNavigator(props: ProfileTabNavigatorProps) {
         {
           translateX: slideLeftEffect.interpolate({
             inputRange: [0, 1],
-            outputRange: [400, -38],
+            outputRange: [400, -380],
           }) as any,
         },
       ],
